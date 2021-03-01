@@ -9,6 +9,7 @@ const theme = {
     facebook: "#385185",
     grey: "#dbdbdb",
     darkgrey: "#262626",
+    secondarywhite: "#fafafa",
   },
   a: {
     primary: "#00376b",
