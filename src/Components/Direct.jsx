@@ -10,8 +10,8 @@ const mapDispatchToProps = (dispatch) => ({
   showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
 });
 
-const Feed = (props) => {
+const Direct = (props) => {
   return <div></div>;
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Feed);
+export default connect(mapStateToProps, mapDispatchToProps)(Direct);

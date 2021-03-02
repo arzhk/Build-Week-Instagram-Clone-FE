@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { theme } from "../Assets/theme";
+import { theme } from "../../Assets/theme";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
-import Logo from "../Assets/logo.png";
-import SpriteSheet from "../Assets/spritesheet.png";
-import { HomeIcon, MessagesIcon, CompassIcon, HeartIcon } from "../Assets/NavIcons/index";
+import styled, { keyframes } from "styled-components";
+import Logo from "../../Assets/logo.png";
+import SpriteSheet from "../../Assets/spritesheet.png";
+import {
+  HomeIcon,
+  HomeIconFilled,
+  MessagesIcon,
+  MessagesIconFilled,
+  CompassIcon,
+  CompassIconFilled,
+  HeartIcon,
+  HeartIconFilled,
+} from "../../Assets/NavIcons/index";
+import Activity from "./Activity";
+import ProfileDropdown from "./ProfileDropdown";
 
 const mapStateToProps = (state) => state;
 
@@ -15,18 +26,57 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const navLinks = [
-  { link: "/", icon: HomeIcon },
-  { link: "/direct/inbox", icon: MessagesIcon },
-  { link: "/explore", icon: CompassIcon },
-  { icon: HeartIcon },
+  { link: "/", icon: HomeIcon, iconFilled: HomeIconFilled },
+  { link: "/direct/inbox", icon: MessagesIcon, iconFilled: MessagesIconFilled },
+  { link: "/explore", icon: CompassIcon, iconFilled: CompassIconFilled },
+  { icon: HeartIcon, iconFilled: HeartIconFilled },
 ];
 
 const NavBar = (props) => {
+  const [showActivity, setShowActivity] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [animatePanel, setAnimatePanel] = useState(false);
+  const [currentPage, setCurrentPage] = useState(props.location.pathname);
+
+  const toggleActivityHandler = () => {
+    if (showActivity) {
+      setAnimatePanel(true);
+      setTimeout(() => {
+        setCurrentPage(props.location.pathname);
+        setShowActivity(false);
+        setAnimatePanel(false);
+      }, 200);
+    } else {
+      setCurrentPage(undefined);
+      setShowActivity(true);
+    }
+  };
+
+  const toggleProfileDropdownHandler = () => {
+    if (showProfileDropdown) {
+      setAnimatePanel(true);
+      setTimeout(() => {
+        setCurrentPage(props.location.pathname);
+        setShowProfileDropdown(false);
+        setAnimatePanel(false);
+      }, 200);
+    } else {
+      setCurrentPage(undefined);
+      setShowProfileDropdown(true);
+    }
+  };
+
+  useEffect(() => {
+    setCurrentPage(props.location.pathname);
+  }, [props.location.pathname]);
+
   return (
     <NavBarMainWrapper>
       <NavBarMainContainer>
         <Left>
-          <img src={Logo} alt="logo" />
+          <Link to="/">
+            <img src={Logo} alt="logo" />
+          </Link>
         </Left>
         <Middle>
           <input type="text" placeholder="Search" />
@@ -36,11 +86,22 @@ const NavBar = (props) => {
         <Right>
           <ul>
             {navLinks.map((link) => (
-              <li>{link.link ? <Link to={`/${link.link}`}>{link.icon()}</Link> : link.icon()}</li>
+              <li>
+                {console.log(currentPage, link.link)}
+                {link.link ? (
+                  <Link to={`${link.link}`}>{currentPage === link.link ? link.iconFilled() : link.icon()}</Link>
+                ) : (
+                  <span onClick={toggleActivityHandler}>{showActivity ? link.iconFilled() : link.icon()}</span>
+                )}
+              </li>
             ))}
-            <li></li>
+            <li onClick={toggleProfileDropdownHandler}></li>
           </ul>
+          {showActivity && <Activity hide={animatePanel} />}
+          {showProfileDropdown && <ProfileDropdown hide={animatePanel} />}
         </Right>
+        {showActivity && <FullWrap onClick={toggleActivityHandler}></FullWrap>}
+        {showProfileDropdown && <FullWrap onClick={toggleProfileDropdownHandler}></FullWrap>}
       </NavBarMainContainer>
     </NavBarMainWrapper>
   );
@@ -71,7 +132,7 @@ const Left = styled.div`
   @media (max-width: 975px) {
     width: 139px;
   }
-  > img {
+  > a > img {
     height: 29px;
     margin-top: 7px;
   }
@@ -138,6 +199,7 @@ const Middle = styled.div`
 const Right = styled.div`
   width: 360px;
   transition: width 0.25s ease;
+  position: relative;
   @media (max-width: 975px) {
     width: 222px;
   }
@@ -148,6 +210,7 @@ const Right = styled.div`
     list-style: none;
     margin: 0;
     padding: 0;
+
     li {
       margin: 0 10px;
     }
@@ -157,8 +220,22 @@ const Right = styled.div`
       width: 22px;
       background-color: blue;
       border-radius: 50%;
+      cursor: pointer;
     }
   }
+  span {
+    cursor: pointer;
+  }
+`;
+
+const FullWrap = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 100vh;
+  width: 100%;
 `;
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavBar);
