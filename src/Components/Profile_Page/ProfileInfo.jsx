@@ -9,14 +9,14 @@ function ProfileInfo() {
 
     return (
         <Container className="mt-5 pt-5">
-            <Row className="px-2">
+            <Row className="">
                 <Col md={4} className="d-flex justify-content-center align-items-center text-center">
                     <ProfilePic src={data.image ?? "https://scontent-mxp1-1.cdninstagram.com/v/t51.2885-19/s320x320/121000984_358942041879580_3222714557187018436_n.jpg?tp=1&_nc_ht=scontent-mxp1-1.cdninstagram.com&_nc_ohc=FM-p-Sqxf0IAX-g6QuJ&oh=9acfd8167113e47abca584dbd130534c&oe=60681570"} />
                 </Col>
                 <Col md={8} >
                     <div className="d-flex align-items-center text-left justify-content-left">
                         <ProfileNickname>Simona Cossai</ProfileNickname>
-                        <ModifyProfileButton className="mx-4">Edit Profile</ModifyProfileButton>
+                        <ModifyProfileButton className="mx-3">Edit Profile</ModifyProfileButton>
                         <SettingsIcon />
                     </div>
                     <div className="d-flex align-items-center text-left mt-2">

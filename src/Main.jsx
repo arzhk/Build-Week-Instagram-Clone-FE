@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-d
 import Login from "./Components/Login_Register/Login";
 import Register from "./Components/Login_Register/Register";
 import ForgotPassword from "./Components/Login_Register/ForgotPassword";
+import ProfilePage from './Components/Profile_Page/ProfilePage';
 
 const Main = (props) => {
   return (
@@ -18,7 +19,9 @@ const Main = (props) => {
           </Switch>
         </>
       ) : (
-        <></>
+        <>
+        <Route exact path="/profile" component={ProfilePage}/>
+        </>
         /*  <Route exact path="/" component={Feed} /> */
       )}
     </Router>

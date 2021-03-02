@@ -8,7 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import {Container, Row, Col} from 'react-bootstrap';
 import Box from '@material-ui/core/Box';
 import SinglePost from './SinglePost';
-//import GridOnIcon from '@material-ui/icons/GridOn';
+import GridOnIcon from '@material-ui/icons/GridOn';
+import { theme } from "../../Assets/theme";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,8 +61,12 @@ const useStyles = makeStyles(() => ({
     },
     appBar:{
       boxShadow:"none", 
+      borderTop:`1px solid ${theme.main.grey}` ,
       backgroundColor: "transparent",
       textAlign:"center"
+    },
+    indicator: {
+      top: "0px",
     }
   }));
 export default function ScrollableTabsButtonAuto() {
@@ -73,7 +78,7 @@ export default function ScrollableTabsButtonAuto() {
   };
 
   return (
-    <Container className="mt-5 pt-5">
+    <Container className="mt-5 pt-5 px-5">
       <AppBar position="static" color="default" className={`d-flex justify-content-center align-items-center ${classes.appBar}`} >
         <Tabs
           value={value}
@@ -81,6 +86,9 @@ export default function ScrollableTabsButtonAuto() {
           indicatorColor="primary"
           textColor="primary"
           variant="scrollable"
+          classes={{
+            indicator: classes.indicator
+          }}
           scrollButtons="auto"
           aria-label="scrollable auto tabs example"
         >
@@ -100,7 +108,7 @@ export default function ScrollableTabsButtonAuto() {
         </Container>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Container className="d-flex justify-content-center align-items-center mt-5 flex-column">
+        <Container className="d-flex justify-content-center align-items-center mt-5 flex-column text-center">
         <img src="https://img.icons8.com/ios/452/igtv.png" className={classes.igtvLogo}/> 
         <h2 className="font-weight-light">Upload a video</h2>
         <p className="text-muted">Videos must be between 1 and 60 minutes long.</p>
@@ -117,7 +125,11 @@ export default function ScrollableTabsButtonAuto() {
         </Container>
       </TabPanel>
       <TabPanel value={value} index={3}>
-        Item Four
+      <Container className="d-flex justify-content-center align-items-center mt-5 flex-column text-center">
+        <img src="https://cdn2.iconfinder.com/data/icons/instagram-ui/48/jee-72-512.png" className={classes.igtvLogo}/> 
+        <h2 className="font-weight-light">Photos of you</h2>
+        <p className="text-muted">When people tag you in photos, they'll appear here.</p>
+        </Container>      
       </TabPanel>
     </Container>
   );
