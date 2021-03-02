@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
 import styled, { keyframes } from "styled-components";
 import Logo from "../../Assets/logo.png";
 import SpriteSheet from "../../Assets/spritesheet.png";
@@ -37,6 +38,7 @@ const NavBar = (props) => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [animatePanel, setAnimatePanel] = useState(false);
   const [currentPage, setCurrentPage] = useState(props.location.pathname);
+  const [searchInput, setSearchInput] = useState("");
 
   const toggleActivityHandler = () => {
     if (showActivity) {
@@ -66,6 +68,14 @@ const NavBar = (props) => {
     }
   };
 
+  const clearInput = async () => {
+    await setSearchInput("");
+  };
+
+  const searchInputHandler = (event) => {
+    setSearchInput(event.target.value);
+  };
+
   useEffect(() => {
     setCurrentPage(props.location.pathname);
   }, [props.location.pathname]);
@@ -79,15 +89,17 @@ const NavBar = (props) => {
           </Link>
         </Left>
         <Middle>
-          <input type="text" placeholder="Search" />
-          <SearchIcon />
-          <CloseIcon />
+          <input type="text" placeholder="Search" value={searchInput} onChange={searchInputHandler} />
+          <SearchIcon searchInput={searchInput} />
+
+          <button onClick={() => clearInput()}>
+            <CloseIcon />
+          </button>
         </Middle>
         <Right>
           <ul>
             {navLinks.map((link) => (
               <li>
-                {console.log(currentPage, link.link)}
                 {link.link ? (
                   <Link to={`${link.link}`}>{currentPage === link.link ? link.iconFilled() : link.icon()}</Link>
                 ) : (
@@ -113,6 +125,12 @@ const NavBarMainWrapper = styled.div`
   border-bottom: 1px solid ${theme.main.grey};
   display: flex;
   align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  z-index: 10;
 `;
 
 const NavBarMainContainer = styled.div`
@@ -143,23 +161,21 @@ const SearchIcon = styled.div`
   background-position: -399px -321px;
   height: 10px;
   width: 10px;
-  left: 74px;
+  left: 78px;
   position: absolute;
   top: 9px;
   z-index: 2;
   background-image: url(${SpriteSheet});
+  ${({ searchInput }) => searchInput.length !== 0 && `left: 11px`}
 `;
 
 const CloseIcon = styled.div`
   background-position: -318px -333px;
   height: 20px;
   width: 20px;
-  position: absolute;
-  right: 5px;
-  top: 4px;
   z-index: 3;
   background-image: url(${SpriteSheet});
-  display: none;
+  opacity: 0;
 `;
 
 const Middle = styled.div`
@@ -167,6 +183,15 @@ const Middle = styled.div`
   align-items: center;
   position: relative;
 
+  > button {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    z-index: 99;
+    border: none;
+    background-color: transparent;
+    cursor: default;
+  }
   > input {
     width: 215px;
     height: 28px;
@@ -176,6 +201,7 @@ const Middle = styled.div`
     padding: 3px 10px 3px 26px;
     color: ${theme.main.darkgrey};
     font-size: 14px;
+
     ::placeholder {
       font-size: 14px;
       color: ${theme.main.grey};
@@ -184,8 +210,9 @@ const Middle = styled.div`
     :focus {
       outline: none;
     }
-    :focus ~ ${CloseIcon} {
-      display: block;
+    :focus ~ button > ${CloseIcon} {
+      opacity: 1;
+      cursor: pointer;
     }
     :focus ~ ${SearchIcon} {
       left: 11px;

@@ -5,7 +5,7 @@ import Login from "./Components/Login_Register/Login";
 import Register from "./Components/Login_Register/Register";
 import ForgotPassword from "./Components/Login_Register/ForgotPassword";
 import NavBar from "./Components/NavBar/NavBar";
-import Feed from "./Components/Feed";
+import Feed from "./Components/Feed/Feed";
 import Explore from "./Components/Explore";
 import Direct from "./Components/Direct";
 
