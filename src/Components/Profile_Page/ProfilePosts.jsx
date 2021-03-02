@@ -5,77 +5,22 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import {Container, Row, Col} from 'react-bootstrap';
+import {Container, Row} from 'react-bootstrap';
 import Box from '@material-ui/core/Box';
 import SinglePost from './SinglePost';
 import GridOnIcon from '@material-ui/icons/GridOn';
+import LiveTvIcon from '@material-ui/icons/LiveTv';
+import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
+import AssignmentIndOutlinedIcon from '@material-ui/icons/AssignmentIndOutlined';
 import { theme } from "../../Assets/theme";
+import '../../App.css';
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `scrollable-auto-tab-${index}`,
-    'aria-controls': `scrollable-auto-tabpanel-${index}`,
-  };
-}
-
-const useStyles = makeStyles(() => ({
-    tabFonts: {
-      fontSize: '12px',
-    },
-    igtvLogo:{
-        width:'80px'
-    },
-    uploadIGTV:{
-        backgroundColor:"#0095F6",
-        border:"none",
-        borderRadius:"6px",
-        padding: "5px 15px",
-        color: "#ffff", 
-        fontSize:"15px"
-    },
-    appBar:{
-      boxShadow:"none", 
-      borderTop:`1px solid ${theme.main.grey}` ,
-      backgroundColor: "transparent",
-      textAlign:"center"
-    },
-    indicator: {
-      top: "0px",
-    }
-  }));
 export default function ScrollableTabsButtonAuto() {
   const [value, setValue] = React.useState(0);
   const classes = useStyles();
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  const handleChange = (event, newValue) => {setValue(newValue)};
 
   return (
     <Container className="mt-5 pt-5 px-5">
@@ -86,16 +31,13 @@ export default function ScrollableTabsButtonAuto() {
           indicatorColor="primary"
           textColor="primary"
           variant="scrollable"
-          classes={{
-            indicator: classes.indicator
-          }}
+          classes={{indicator: classes.indicator}}
           scrollButtons="auto"
-          aria-label="scrollable auto tabs example"
-        >
-          <Tab label="POSTS" {...a11yProps(0)} className={classes.tabFonts}/>
-          <Tab label="IGTV" {...a11yProps(1)} className={classes.tabFonts}/>
-          <Tab label="SAVED" {...a11yProps(2)} className={classes.tabFonts}/>
-          <Tab label="TAGGED" {...a11yProps(3)} className={classes.tabFonts}/>
+          aria-label="scrollable auto tabs example">
+          <Tab label={<><GridOnIcon  className={classes.tabIcons}/> POSTS</>} {...a11yProps(0)} className={classes.tabFonts} />
+          <Tab label={<><LiveTvIcon  className={classes.tabIcons}/> IGTV</>}  {...a11yProps(1)} className={classes.tabFonts}/>
+          <Tab label={<><BookmarkBorderIcon  className={classes.tabIcons}/> SAVED</>}  {...a11yProps(2)} className={classes.tabFonts}/>
+          <Tab label={<><AssignmentIndOutlinedIcon  className={classes.tabIcons}/> TAGGED</>}  {...a11yProps(3)} className={classes.tabFonts}/>
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -134,3 +76,73 @@ export default function ScrollableTabsButtonAuto() {
     </Container>
   );
 }
+
+
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`scrollable-auto-tabpanel-${index}`}
+      aria-labelledby={`scrollable-auto-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `scrollable-auto-tab-${index}`,
+    'aria-controls': `scrollable-auto-tabpanel-${index}`,
+  };
+}
+
+
+const useStyles = makeStyles(() => ({
+  tabFonts: {
+    fontSize: '12px',
+    display:'flex',
+    flexDirection: 'row'
+  },
+  igtvLogo:{
+      width:'80px'
+  },
+  uploadIGTV:{
+      backgroundColor:"#0095F6",
+      border:"none",
+      borderRadius:"6px",
+      padding: "5px 15px",
+      color: "#ffff", 
+      fontSize:"15px"
+  },
+  appBar:{
+    boxShadow:"none", 
+    borderTop:`1px solid ${theme.main.grey}` ,
+    backgroundColor: "transparent",
+    textAlign:"center",
+    display:'flex'
+  },
+  indicator: {
+    top: "0px",
+    display:'flex'
+  },
+  tabIcons:{
+    fontSize:"13px",
+    marginRight:"5px"
+  }
+}));

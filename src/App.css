@@ -9,3 +9,7 @@ body {
 a:hover {
   text-decoration: none;
 }
+
+.MuiTab-wrapper {
+  flex-direction: row !important;
+}

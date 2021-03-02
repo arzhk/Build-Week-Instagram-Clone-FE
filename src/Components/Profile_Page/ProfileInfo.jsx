@@ -29,8 +29,7 @@ function ProfileInfo() {
                         <ProfileType>Blog personale</ProfileType>
                         <ProfileDescription>🌱 Lorem ipsum blabla
                         📝 Lorem ipsum blabla
-                        ❔ Lorem ipsum blablabalblbala</ProfileDescription>
-                        
+                        ❔ Lorem ipsum blablabalblbala</ProfileDescription>       
                     </div>
                 </Col>
             </Row>
