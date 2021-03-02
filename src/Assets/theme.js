@@ -8,6 +8,7 @@ const theme = {
     lightblue: "#0095f6",
     facebook: "#385185",
     grey: "#dbdbdb",
+    mediumgrey: "#c1c1c1",
     darkgrey: "#262626",
   },
   a: {
