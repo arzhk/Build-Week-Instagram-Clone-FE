@@ -21,6 +21,7 @@ function SinglePost() {
 }
 const Post = styled.img`
     width: 100%;
+    margin-top:25px;
 `;
 
 const Overlay = styled.div`

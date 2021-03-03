@@ -40,9 +40,12 @@ export default function ScrollableTabsButtonAuto() {
           <Tab label={<><AssignmentIndOutlinedIcon  className={classes.tabIcons}/> TAGGED</>}  {...a11yProps(3)} className={classes.tabFonts}/>
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0}>
+      <TabPanel value={value} index={0} className={classes.posts}>
         <Container>
             <Row>
+          <SinglePost/>
+          <SinglePost/>
+          <SinglePost/>  
           <SinglePost/>
           <SinglePost/>
           <SinglePost/>  
@@ -57,7 +60,7 @@ export default function ScrollableTabsButtonAuto() {
         <button className={classes.uploadIGTV}>Upload</button>      
         </Container>
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      <TabPanel value={value} index={2} className={classes.posts}>
       <Container>
             <Row>
             <SinglePost/>
