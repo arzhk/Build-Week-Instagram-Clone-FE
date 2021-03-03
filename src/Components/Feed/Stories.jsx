@@ -77,7 +77,7 @@ const StoriesMainContainer = styled.div`
     background-repeat: no-repeat;
     height: 40px;
     width: 40px;
-    z-index: 99;
+    z-index: 2;
     position: absolute;
     cursor: pointer;
   }
@@ -123,7 +123,7 @@ const Story = styled.div`
     background-image: url(${SpriteSheet});
     background-repeat: no-repeat;
     background-position: -306px -66px;
-    height: 66px;
+    height: 65px;
     width: 66px;
     position: absolute;
     top: -4px;

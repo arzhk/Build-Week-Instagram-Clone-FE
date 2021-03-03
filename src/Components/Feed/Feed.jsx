@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import { Container, Row, Col } from "react-bootstrap";
@@ -8,6 +8,8 @@ import Profile from "./Profile";
 import Suggestions from "./Suggestions";
 import Footer from "./Footer";
 import Post from "../Post";
+import CreatePost from "./CreatePost";
+import CreatePostPanel from "./CreatePostPanel";
 
 const mapStateToProps = (state) => state;
 
@@ -17,6 +19,17 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const Feed = (props) => {
+  const [newPostPanelRight, setNewPostPanelRight] = useState(0);
+  const [showNewPostPanel, setShowNewPostPanel] = useState(true);
+
+  const toggleNewPostPanel = async () => {
+    if (newPostPanelRight === -400) {
+      await setShowNewPostPanel(false);
+    }
+    await setShowNewPostPanel(true);
+    newPostPanelRight === 0 ? setNewPostPanelRight(-400) : setNewPostPanelRight(0);
+  };
+
   return (
     <MainFeedWrap>
       <MainFeedContainer>
@@ -36,6 +49,7 @@ const Feed = (props) => {
             </Col>
             <Col xs={4} className="d-none d-lg-block">
               <Right>
+                <CreatePost toggleNewPostPanel={toggleNewPostPanel} />
                 <Profile />
                 <Suggestions />
                 <Footer />
@@ -43,6 +57,7 @@ const Feed = (props) => {
             </Col>
           </Row>
         </Container>
+        {showNewPostPanel && <CreatePostPanel panelRight={newPostPanelRight} toggleNewPostPanel={toggleNewPostPanel} />}
       </MainFeedContainer>
     </MainFeedWrap>
   );

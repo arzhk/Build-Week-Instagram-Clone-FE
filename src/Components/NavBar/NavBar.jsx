@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import { Link } from "react-router-dom";
-import { Button } from "react-bootstrap";
 import styled, { keyframes } from "styled-components";
 import Logo from "../../Assets/logo.png";
 import SpriteSheet from "../../Assets/spritesheet.png";
@@ -18,6 +17,7 @@ import {
 } from "../../Assets/NavIcons/index";
 import Activity from "./Activity";
 import ProfileDropdown from "./ProfileDropdown";
+import SearchBox from "./SearchBox";
 
 const mapStateToProps = (state) => state;
 
@@ -91,10 +91,10 @@ const NavBar = (props) => {
         <Middle>
           <input type="text" placeholder="Search" value={searchInput} onChange={searchInputHandler} />
           <SearchIcon searchInput={searchInput} />
-
           <button onClick={() => clearInput()}>
             <CloseIcon />
           </button>
+          {searchInput.length !== 0 && <SearchBox />}
         </Middle>
         <Right>
           <ul>

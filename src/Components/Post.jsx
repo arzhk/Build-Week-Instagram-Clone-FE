@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { LikeIcon, UnlikeIcon, CommentIcon, ShareIcon, SaveIcon, MoreIcon, EmojiIcon } from "../Assets/PostIcons";
 import SpriteSheet from "../Assets/spritesheet.png";
+import MorePopup from "./MorePopup";
+import PopupPost from "./PopupPost";
 
 const mapStateToProps = (state) => state;
 
@@ -16,14 +18,22 @@ const mapDispatchToProps = (dispatch) => ({
 const Post = (props) => {
   const [isLiked, setIsLiked] = useState(false);
   const [showLargeHeart, setShowLargeHeart] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const [showPostOptions, setShowPostOptions] = useState(false);
+  const [showPopupPost, setShowPopupPost] = useState(false);
+  const str = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo esse sed id quod nostrum, impedit, cum in
+              incidunt, inventore fugiat ut et? Delectus culpa magnam test neque consequuntur
+              ratione eum reiciendis.`;
 
   const likePostToggler = () => {
     setIsLiked(!isLiked);
   };
+
   const likePost = () => {
     setIsLiked(true);
     toggleLargeHeart();
   };
+
   const toggleLargeHeart = () => {
     setShowLargeHeart(true);
     setTimeout(() => {
@@ -31,59 +41,86 @@ const Post = (props) => {
     }, 2000);
   };
 
-  return (
-    <PostMainContainer>
-      <PostHeader>
-        <div className="left">
-          <div className="post-profile-picture"></div>
-          <Link to="#">Username</Link>
-        </div>
-        <div className="right">
-          <button>{MoreIcon()}</button>
-        </div>
-      </PostHeader>
-      <PostImage onDoubleClick={() => likePost()}>
-        {showLargeHeart && <div className="liked-heart-large"></div>}
-      </PostImage>
+  const showMoreHandler = () => {
+    setShowMore(true);
+  };
+  const showPostOptionsHandler = () => {
+    setShowPostOptions(!showPostOptions);
+  };
 
-      <PostFooter>
-        <PostIconBar>
+  const showPopupPostHandler = () => {
+    setShowPopupPost(!showPopupPost);
+  };
+
+  return (
+    <>
+      {showPostOptions && <MorePopup showPostOptions={showPostOptionsHandler} />}
+      {showPopupPost && <PopupPost showPopupPost={showPopupPostHandler} showPostOptions={showPostOptionsHandler} />}
+      <PostMainContainer>
+        <PostHeader>
           <div className="left">
-            <button className="like-button" onClick={likePostToggler}>
-              {isLiked ? UnlikeIcon() : LikeIcon()}
-            </button>
-            <button>{CommentIcon()}</button>
-            <button>{ShareIcon()}</button>
+            <div className="post-profile-picture"></div>
+            <div>
+              <Link to="#">Username</Link>
+              <small>Location, Country</small>
+            </div>
           </div>
           <div className="right">
-            <button>{SaveIcon()}</button>
+            <button onClick={setShowPostOptions}>{MoreIcon()}</button>
           </div>
-        </PostIconBar>
-        <PostCaption>
-          <Link to="#" className="number-of-likes">
-            11 likes
-          </Link>
-          <div>
-            <Link to="#">Username</Link>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo esse sed id quod nostrum, impedit, cum in
-              incidunt, inventore fugiat ut et? Delectus culpa magnam <Link to="#">test</Link> neque consequuntur
-              ratione eum reiciendis.
-            </p>
-          </div>
-          <small>5 HOURS AGO</small>
-        </PostCaption>
-        <PostComment>
-          <div className="left">
-            <button>{EmojiIcon()}</button>
-            <input type="text" placeholder="Add a comment..." />
-          </div>
-          <div className="right">
-            <button>Post</button>
-          </div>
-        </PostComment>
-      </PostFooter>
-    </PostMainContainer>
+        </PostHeader>
+        <PostImage onDoubleClick={() => likePost()}>
+          {showLargeHeart && <div className="liked-heart-large"></div>}
+        </PostImage>
+
+        <PostFooter>
+          <PostIconBar>
+            <div className="left">
+              <button className="like-button" onClick={likePostToggler}>
+                {isLiked ? UnlikeIcon() : LikeIcon()}
+              </button>
+              <button>{CommentIcon()}</button>
+              <button>{ShareIcon()}</button>
+            </div>
+            <div className="right">
+              <button>{SaveIcon()}</button>
+            </div>
+          </PostIconBar>
+          <PostCaption>
+            <Link to="#" className="number-of-likes">
+              11 likes
+            </Link>
+            <div>
+              <Link to="#">Username</Link>
+              {showMore ? (
+                <p>{str}</p>
+              ) : (
+                <p>
+                  {str.split("").splice(0, 35).join("")}... <button onClick={showMoreHandler}>more</button>
+                </p>
+              )}
+            </div>
+            <PostComments>
+              <button onClick={showPopupPostHandler}>View all 17 comments</button>
+              <SingleComment>
+                <Link to="#">Username</Link>
+                <p>Comment</p>
+              </SingleComment>
+            </PostComments>
+            <small>5 HOURS AGO</small>
+          </PostCaption>
+          <PostNewComment>
+            <div className="left">
+              <button>{EmojiIcon()}</button>
+              <input type="text" placeholder="Add a comment..." />
+            </div>
+            <div className="right">
+              <button>Post</button>
+            </div>
+          </PostNewComment>
+        </PostFooter>
+      </PostMainContainer>
+    </>
   );
 };
 
@@ -99,7 +136,7 @@ const PostHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 12px 16px;
 
   .left {
     display: flex;
@@ -112,13 +149,21 @@ const PostHeader = styled.div`
       border-radius: 50%;
       margin-right: 14px;
     }
+    > div {
+      display: flex;
+      flex-direction: column;
+      > a {
+        color: ${theme.main.darkgrey};
+        font-weight: 600;
+        font-size: 14px;
 
-    > a {
-      color: ${theme.main.darkgrey};
-      font-weight: 600;
-      font-size: 14px;
-      :hover {
-        text-decoration: underline;
+        :hover {
+          text-decoration: underline;
+        }
+      }
+      small {
+        color: ${theme.a.light};
+        font-size: 12px;
       }
     }
   }
@@ -206,8 +251,14 @@ const PostCaption = styled.div`
     }
     p {
       font-weight: 400;
+      max-width: 85%;
       a {
         color: ${theme.a.primary};
+      }
+      button {
+        border: none;
+        background-color: transparent;
+        color: ${theme.a.light};
       }
     }
   }
@@ -216,7 +267,33 @@ const PostCaption = styled.div`
   }
 `;
 
-const PostComment = styled.div`
+const PostComments = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  > button {
+    background-color: transparent;
+    border: none;
+    color: ${theme.a.light};
+    text-align: left;
+    width: 160px;
+    padding: 0;
+  }
+`;
+
+const SingleComment = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  a {
+    font-weight: 600;
+  }
+  > p {
+    margin: 0;
+  }
+`;
+
+const PostNewComment = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
