@@ -10,6 +10,7 @@ const theme = {
     grey: "#dbdbdb",
     mediumgrey: "#c1c1c1",
     darkgrey: "#262626",
+    secondarywhite: "#fafafa",
   },
   a: {
     primary: "#00376b",
