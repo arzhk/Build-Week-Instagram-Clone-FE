@@ -91,7 +91,6 @@ const NavBar = (props) => {
         <Middle>
           <input type="text" placeholder="Search" value={searchInput} onChange={searchInputHandler} />
           <SearchIcon searchInput={searchInput} />
-
           <button onClick={() => clearInput()}>
             <CloseIcon />
           </button>
