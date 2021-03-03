@@ -21,7 +21,7 @@ function Suggestions() {
                 <Link to="#">Username</Link>
                 <p>Suggested for you</p>
               </div>
-              <Link to="#">Switch</Link>
+              <Link to="#">Follow</Link>
             </div>
           </Profile>
         ))}
@@ -60,7 +60,7 @@ const Profile = styled.div`
   align-items: center;
 
   .profile-icon {
-    margin-right: 12px;
+    margin-right: 8px;
     min-height: 32px;
     min-width: 32px;
     background-color: blue;
@@ -80,6 +80,9 @@ const Profile = styled.div`
         a {
           font-size: 14px;
           color: ${theme.main.darkgrey};
+          :hover {
+            text-decoration: underline;
+          }
         }
       }
 
@@ -94,6 +97,7 @@ const Profile = styled.div`
     display: flex;
     align-items: center;
     color: ${theme.main.lightblue};
+    color: rgb(0, 149, 246);
   }
 `;
 

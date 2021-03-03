@@ -204,7 +204,7 @@ const Middle = styled.div`
 
     ::placeholder {
       font-size: 14px;
-      color: ${theme.main.grey};
+      color: rgba(0, 0, 0, 0.35);
       text-align: center;
     }
     :focus {
