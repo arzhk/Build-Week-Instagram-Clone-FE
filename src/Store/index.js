@@ -8,19 +8,21 @@ const composedEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const initialState = {
   user: {
-    firstName: "",
+    name: "",
     surname: "",
-    username: "test",
-    img: "https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png",
+    username: "",
+    img: "",
     searchHistory: [],
+    following: [],
+    followers: [],
   },
   search: {
     searchResults: [],
     selectedLocation: [],
   },
   app: {
-    isLoading: true,
-    isSignedIn: true,
+    isLoading: false,
+    isSignedIn: false,
   },
   errors: {
     show: false,

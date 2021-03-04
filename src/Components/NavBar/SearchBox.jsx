@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import { Link } from "react-router-dom";
@@ -13,64 +13,23 @@ const mapDispatchToProps = (dispatch) => ({
 
 const SearchBox = (props) => {
   return (
-    <SearchBoxContainer>
-      <SingleSearchResult>
-        <div className="profile-picture"></div>
-        <div className="user-info">
-          <Link to="#">Username</Link>
-          <p>Description</p>
-        </div>
-      </SingleSearchResult>
-      <SingleSearchResult>
-        <div className="profile-picture"></div>
-        <div className="user-info">
-          <Link to="#">Username</Link>
-          <p>Description</p>
-        </div>
-      </SingleSearchResult>
-      <SingleSearchResult>
-        <div className="profile-picture"></div>
-        <div className="user-info">
-          <Link to="#">Username</Link>
-          <p>Description</p>
-        </div>
-      </SingleSearchResult>
-      <SingleSearchResult>
-        <div className="profile-picture"></div>
-        <div className="user-info">
-          <Link to="#">Username</Link>
-          <p>Description</p>
-        </div>
-      </SingleSearchResult>
-      <SingleSearchResult>
-        <div className="profile-picture"></div>
-        <div className="user-info">
-          <Link to="#">Username</Link>
-          <p>Description</p>
-        </div>
-      </SingleSearchResult>
-      <SingleSearchResult>
-        <div className="profile-picture"></div>
-        <div className="user-info">
-          <Link to="#">Username</Link>
-          <p>Description</p>
-        </div>
-      </SingleSearchResult>
-      <SingleSearchResult>
-        <div className="profile-picture"></div>
-        <div className="user-info">
-          <Link to="#">Username</Link>
-          <p>Description</p>
-        </div>
-      </SingleSearchResult>
-      <SingleSearchResult>
-        <div className="profile-picture"></div>
-        <div className="user-info">
-          <Link to="#">Username</Link>
-          <p>Description</p>
-        </div>
-      </SingleSearchResult>
-    </SearchBoxContainer>
+    <>
+      {props.search.searchResults.length !== 0 && (
+        <SearchBoxContainer>
+          {props.search.searchResults.map((result) => (
+            <SingleSearchResult>
+              <div className="profile-picture">
+                <img src={result.image} alt="profile-picture" />
+              </div>
+              <div className="user-info">
+                <Link to="#">{result.username.toLowerCase()}</Link>
+                <p>{result.name}</p>
+              </div>
+            </SingleSearchResult>
+          ))}
+        </SearchBoxContainer>
+      )}
+    </>
   );
 };
 
@@ -80,7 +39,7 @@ const SearchBoxContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   max-height: 375px;
-  min-height: 100px;
+  /*   min-height: 100px; */
   width: 362px;
   overflow-y: auto;
   position: absolute;
@@ -109,6 +68,11 @@ const SingleSearchResult = styled.div`
     border-radius: 50%;
     background-color: black;
     margin-right: 10px;
+    overflow: hidden;
+    img {
+      height: 44px;
+      width: 44px;
+    }
   }
 
   .user-info {

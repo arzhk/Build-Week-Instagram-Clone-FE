@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { theme } from "../Assets/theme";
 import styled, { keyframes } from "styled-components";
@@ -6,12 +6,45 @@ import styled, { keyframes } from "styled-components";
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
+  setUser: (data) => dispatch({ type: "UPDATE_USER_INFO", payload: data }),
   setError: (error) => dispatch({ type: "SET_ERROR", payload: error }),
   showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
 });
 
 const MorePopup = (props) => {
-  const isFollowing = false;
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  const followHandler = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5555/api/users/follow/${userId}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (data._id) {
+        props.setUser(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (props.user.following.findIndex((userId) => userId === props.postUserId) !== -1) {
+      setIsFollowing(true);
+    } else {
+      setIsFollowing(false);
+    }
+    console.log(props);
+  }, []);
+
+  useEffect(() => {
+    if (props.user.following.findIndex((userId) => userId === props.postUserId) !== -1) {
+      setIsFollowing(true);
+    } else {
+      setIsFollowing(false);
+    }
+  }, [props.user.following]);
 
   return (
     <MorePopupWrapper onClick={props.showPostOptions}>
@@ -23,7 +56,7 @@ const MorePopup = (props) => {
           {isFollowing && (
             <>
               <li className="conditional">
-                <button>Unfollow</button>
+                <button onClick={() => followHandler(props.postUserId)}>Unfollow</button>
               </li>
             </>
           )}

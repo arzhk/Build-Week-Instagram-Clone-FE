@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { authorise } from "./Auth";
+import styled from "styled-components";
 import Login from "./Components/Login_Register/Login";
 import Register from "./Components/Login_Register/Register";
 import ForgotPassword from "./Components/Login_Register/ForgotPassword";
@@ -8,8 +10,21 @@ import NavBar from "./Components/NavBar/NavBar";
 import Feed from "./Components/Feed/Feed";
 import Explore from "./Components/Explore";
 import Direct from "./Components/Direct";
+import FullPageLoader from "./Components/Loaders/FullPageLoader";
 
 const Main = (props) => {
+  const start = async () => {
+    await authorise(props.setUser);
+    setTimeout(() => {
+      props.setLoading(false);
+    }, 1300);
+  };
+
+  useEffect(() => {
+    props.setLoading(true);
+    start();
+  }, []);
+
   return (
     <Router>
       {!props.app.isLoggedIn && !props.user.username ? (
@@ -32,6 +47,7 @@ const Main = (props) => {
           </Switch>
         </>
       )}
+      {props.app.isLoading && <FullPageLoader />}
     </Router>
   );
 };
@@ -39,6 +55,8 @@ const Main = (props) => {
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
+  setUser: (data) => dispatch({ type: "UPDATE_USER_INFO", payload: data }),
+  setLoading: (boolean) => dispatch({ type: "SET_LOADING", payload: boolean }),
   setError: (error) => dispatch({ type: "SET_ERROR", payload: error }),
   showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
 });

@@ -1,11 +1,49 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-const suggestions = ["1", "2", "3", "4", "5"];
+const mapStateToProps = (state) => state;
 
-function Suggestions() {
+const mapDispatchToProps = (dispatch) => ({
+  setUser: (data) => dispatch({ type: "UPDATE_USER_INFO", payload: data }),
+  setError: (error) => dispatch({ type: "SET_ERROR", payload: error }),
+  showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
+});
+
+function Suggestions(props) {
+  const [suggestions, setSuggestions] = useState([]);
+
+  const fetchSuggestions = async () => {
+    try {
+      const response = await fetch("http://localhost:5555/api/users/suggestions", { credentials: "include" });
+      const data = await response.json();
+      setSuggestions(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const followHandler = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5555/api/users/follow/${userId}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (data._id) {
+        props.setUser(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSuggestions();
+  }, []);
+
   return (
     <SuggestionsMainContainer>
       <TitleContainer>
@@ -13,15 +51,23 @@ function Suggestions() {
         <Link to="#">See All</Link>
       </TitleContainer>
       <Content>
-        {suggestions.map((suggestion) => (
-          <Profile>
-            <div className="profile-icon"></div>
+        {suggestions.map((suggestion, index) => (
+          <Profile key={index}>
+            <div className="profile-icon">
+              <img src={suggestion.image} alt="profile-picture" />
+            </div>
             <div>
               <div className="user-info">
-                <Link to="#">Username</Link>
+                <Link to="#">{suggestion.username.toLowerCase()}</Link>
                 <p>Suggested for you</p>
               </div>
-              <Link to="#">Follow</Link>
+              {props.user.following.findIndex(
+                (followedUser) => followedUser.toString() === suggestion._id.toString()
+              ) === -1 ? (
+                <button onClick={() => followHandler(suggestion._id)}>Follow</button>
+              ) : (
+                <button onClick={() => followHandler(suggestion._id)}>Unfollow</button>
+              )}
             </div>
           </Profile>
         ))}
@@ -60,11 +106,19 @@ const Profile = styled.div`
   align-items: center;
 
   .profile-icon {
-    margin-right: 8px;
+    margin-right: 12px;
     min-height: 32px;
     min-width: 32px;
-    background-color: blue;
+    background-color: ${theme.main.grey};
     border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > img {
+      width: 32px;
+      height: 32px;
+    }
 
     ~ div {
       display: flex;
@@ -85,9 +139,16 @@ const Profile = styled.div`
           }
         }
       }
-
       p {
         margin: 0;
+      }
+      button {
+        background-color: transparent;
+        border: none;
+        color: ${theme.main.lightblue};
+        font-weight: 600;
+        font-size: 12px;
+        padding: 0;
       }
     }
   }
@@ -101,4 +162,4 @@ const Profile = styled.div`
   }
 `;
 
-export default Suggestions;
+export default connect(mapStateToProps, mapDispatchToProps)(Suggestions);

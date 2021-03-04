@@ -3,7 +3,7 @@ export default function (state = {}, action) {
     case "SET_LOADING":
       return {
         ...state,
-        loading: action.payload,
+        isLoading: action.payload,
       };
     default:
       return state;

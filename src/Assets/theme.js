@@ -10,6 +10,7 @@ const theme = {
     grey: "#dbdbdb",
     darkgrey: "#262626",
     secondarywhite: "#fafafa",
+    error: "#ed4956",
   },
   a: {
     primary: "#00376b",

@@ -1,16 +1,26 @@
 import React from "react";
+import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-function Profile() {
+const mapStateToProps = (state) => state;
+
+const mapDispatchToProps = (dispatch) => ({
+  setError: (error) => dispatch({ type: "SET_ERROR", payload: error }),
+  showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
+});
+
+function Profile(props) {
   return (
     <ProfileMainContainer>
       <div>
-        <div style={{ height: 56, width: 56, backgroundColor: "blue", borderRadius: "50%" }}></div>
+        <div className="profile-picture">
+          <img src={props.user.image} alt="profile-picture" />
+        </div>
         <div>
-          <Link to="#">Username</Link>
-          <p>Name</p>
+          <Link to="#">{props.user.username.toLowerCase()}</Link>
+          <p>{props.user.name}</p>
         </div>
       </div>
       <Link to="#">Switch</Link>
@@ -29,8 +39,17 @@ const ProfileMainContainer = styled.div`
     display: flex;
     align-items: center;
     font-size: 14px;
-    > div {
+    .profile-picture {
       margin-right: 12px;
+      height: 56px;
+      width: 56px;
+      border-radius: 50%;
+      background-color: ${theme.main.grey};
+      overflow: hidden;
+      img {
+        height: 56px;
+        width: 56px;
+      }
       ~ div {
         margin-left: 8px;
       }
@@ -55,4 +74,4 @@ const ProfileMainContainer = styled.div`
   }
 `;
 
-export default Profile;
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

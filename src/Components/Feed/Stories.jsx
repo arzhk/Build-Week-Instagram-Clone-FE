@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import styled from "styled-components";
@@ -13,10 +13,21 @@ const mapDispatchToProps = (dispatch) => ({
   showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
 });
 
-const users = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-
 const Stories = (props) => {
   const [spacerSize, setSpacerSize] = useState(0);
+  const [stories, setStories] = useState([]);
+
+  const storiesHandler = async () => {
+    try {
+      const response = await fetch("http://localhost:5555/api/users/following", { credentials: "include" });
+      const data = await response.json();
+      if (response.ok) {
+        setStories(data.splice(0, 12));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const scrollHandler = (event) => {
     switch (event.target.id) {
@@ -29,21 +40,31 @@ const Stories = (props) => {
     }
   };
 
+  useEffect(() => {
+    storiesHandler();
+  }, []);
+
   return (
-    <StoriesMainWrapper>
-      <StoriesMainContainer>
-        <Spacer spacerSize={spacerSize} />
-        {spacerSize !== 0 && <div id="arrow-left" className="arrow-button-left" onClick={scrollHandler} />}
-        {users.map((user) => (
-          <Story>
-            <div></div>
-            <div className="story-outline"></div>
-            <div>Usernadasdsadasdsme</div>
-          </Story>
-        ))}
-        {spacerSize !== -580 && <div id="arrow-right" className="arrow-button-right" onClick={scrollHandler} />}
-      </StoriesMainContainer>
-    </StoriesMainWrapper>
+    <>
+      {stories.length !== 0 && (
+        <StoriesMainWrapper>
+          <StoriesMainContainer>
+            <Spacer spacerSize={spacerSize} />
+            {spacerSize !== 0 && <div id="arrow-left" className="arrow-button-left" onClick={scrollHandler} />}
+            {stories.map((user) => (
+              <Story>
+                <div className="profile-picture">
+                  <img src={user.image} alt="profile-picture" />
+                </div>
+                <div className="story-outline"></div>
+                <div>{user.username.toLowerCase()}</div>
+              </Story>
+            ))}
+            {spacerSize !== -580 && <div id="arrow-right" className="arrow-button-right" onClick={scrollHandler} />}
+          </StoriesMainContainer>
+        </StoriesMainWrapper>
+      )}
+    </>
   );
 };
 
@@ -102,12 +123,17 @@ const Story = styled.div`
   position: relative;
   text-align: center;
   cursor: pointer;
-  > div:first-child {
+  .profile-picture {
     height: 56px;
     width: 56px;
     border-radius: 50%;
     background-color: black;
     margin: 0 auto;
+    overflow: hidden;
+    img {
+      height: 56px;
+      width: 56px;
+    }
   }
   div:last-child {
     text-overflow: ellipsis;

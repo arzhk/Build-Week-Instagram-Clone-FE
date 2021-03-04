@@ -3,11 +3,14 @@ import { connect } from "react-redux";
 import { theme } from "../Assets/theme";
 import { Link } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
+import Moment from "react-moment";
 import { LikeIcon, UnlikeIcon, CommentIcon, ShareIcon, SaveIcon, MoreIcon, EmojiIcon } from "../Assets/PostIcons";
+import { Portal } from "@material-ui/core";
 
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
+  setUser: (data) => dispatch({ type: "UPDATE_USER_INFO", payload: data }),
   setError: (error) => dispatch({ type: "SET_ERROR", payload: error }),
   showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
 });
@@ -16,51 +19,94 @@ const PopupPost = (props) => {
   const [isLiked, setIsLiked] = useState(false);
   const [commentInput, setCommentInput] = useState("");
 
+  const followHandler = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5555/api/users/follow/${userId}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (data._id) {
+        props.setUser(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <PopupPostWrapper>
       <PopupBackgroundDim onClick={props.showPopupPost} />
       <PopupPostContainer>
         <div className="left">
-          <div className="post-image"></div>
+          <div className="post-image">
+            <img src={props.post.image} alt="picture" />
+          </div>
         </div>
         <div className="right">
-          <PopupPostHeader>
-            <div className="left">
-              <div className="profile-picture"></div>
-              <div className="post-info">
-                <Link to="#">Username</Link>
-                <small>Location</small>
-              </div>
-            </div>
-            <div className="right">
-              <button>Follow</button>
-              <button onClick={props.showPostOptions}>{MoreIcon()}</button>
-            </div>
-          </PopupPostHeader>
-          <PopupPostCaption>
-            <div className="profile-picture"></div>
-            <div className="post-info">
-              <div>
-                <Link to="#">Username</Link>
-                <p>Caption</p>
-              </div>
-              <small>1d</small>
-            </div>
-          </PopupPostCaption>
-          <PopupPostComments>
-            <SingleComment>
-              <div className="profile-picture"></div>
-              <div className="comment-content">
-                <Link to="#">Username</Link>
-                <p>Comment text akdmaskldmsaamdskla</p>
-                <div>
-                  <small>1d</small>
-                  <button>3 likes</button>
-                  <button>Reply</button>
+          <div>
+            {" "}
+            <PopupPostHeader>
+              <div className="left">
+                <div className="profile-picture">
+                  <img src={props.post.user.image} alt="profile-picture" />
+                </div>
+                <div className="post-info">
+                  <Link to="#">{props.post.username}</Link>
+                  <small>{props.post.location}</small>
                 </div>
               </div>
-            </SingleComment>
-          </PopupPostComments>
+              <div className="right">
+                {props.user.following.findIndex(
+                  (followedUser) => followedUser.toString() === props.post.user._id.toString()
+                ) === -1 ? (
+                  <button onClick={() => followHandler(props.post.user._id)}>Follow</button>
+                ) : (
+                  <button onClick={() => followHandler(props.post.user._id)}>Unfollow</button>
+                )}
+
+                <button onClick={props.showPostOptions}>{MoreIcon()}</button>
+              </div>
+            </PopupPostHeader>
+            <PopupPostCaption>
+              <div className="profile-picture">
+                <img src={props.post.user.image} alt="profile-picture" />
+              </div>
+              <div className="post-info">
+                <div>
+                  <Link to="#">{props.post.username}</Link>
+                  <p>{props.post.text}</p>
+                </div>
+                <small>
+                  <Moment fromNow ago>
+                    {props.post.createdAt}
+                  </Moment>{" "}
+                  ago
+                </small>
+              </div>
+            </PopupPostCaption>
+            <PopupPostComments>
+              {props.comments.map((comment) => (
+                <SingleComment>
+                  <div className="profile-picture"></div>
+                  <div className="comment-content">
+                    <Link to="#">{comment.user}</Link>
+                    <p>{comment.text}</p>
+                    <div>
+                      <small>
+                        <Moment fromNow ago>
+                          {comment.createdAt}
+                        </Moment>
+                      </small>
+                      <button>{Math.floor(Math.random() * 100)} likes</button>
+                      <button>Reply</button>
+                    </div>
+                  </div>
+                </SingleComment>
+              ))}
+            </PopupPostComments>
+          </div>
+
           <PopupPostFooter>
             <PopupPostIconBar>
               <div className="left">
@@ -72,8 +118,13 @@ const PopupPost = (props) => {
                 <button>{SaveIcon()}</button>
               </div>
             </PopupPostIconBar>
-            <button className="number-of-likes">690 likes</button>
-            <small>1 DAY AGO</small>
+            <button className="number-of-likes">{props.post.likes.length} likes</button>
+            <small>
+              <Moment fromNow ago>
+                {props.post.createdAt}
+              </Moment>{" "}
+              ago
+            </small>
             <PopupPostNewComment>
               <div class="left">
                 <button>{EmojiIcon()}</button>
@@ -123,15 +174,15 @@ const PopupPostContainer = styled.div`
   box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.05);
   text-align: center;
   display: flex;
-  min-height: 450px;
-  max-height: 650px;
+  /*   min-height: 450px;
+  max-height: 650px; */
   position: relative;
   z-index: 99;
   .left {
     .post-image {
-      height: 650px;
-      width: 500px;
-      background-color: red;
+      /*    height: 650px;
+      width: 500px; */
+      background-color: ${theme.main.darkgrey};
     }
   }
 
@@ -146,9 +197,17 @@ const PopupPostContainer = styled.div`
   .profile-picture {
     height: 32px;
     width: 32px;
-    background-color: black;
+    background-color: ${theme.main.grey};
     border-radius: 50%;
     margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    img {
+      height: 32px;
+      width: 32px;
+    }
   }
 `;
 
@@ -221,9 +280,10 @@ const PopupPostCaption = styled.div`
       color: ${theme.a.light};
       width: 100%;
       text-align: left;
-      font-size: 12px;
+      font-size: 10px;
       margin-top: 16px;
       margin-bottom: 4px;
+      text-transform: uppercase;
     }
   }
 `;
@@ -304,6 +364,7 @@ const PopupPostFooter = styled.div`
     font-size: 10px;
     padding: 0px 16px;
     margin-bottom: 8px;
+    text-transform: uppercase;
   }
 `;
 

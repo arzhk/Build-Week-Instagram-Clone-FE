@@ -12,7 +12,7 @@ const mapDispatchToProps = (dispatch) => ({
   showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
 });
 
-export const ProfileDropdown = (props) => {
+const ProfileDropdown = (props) => {
   return (
     <ProfileDropdownMainContainer className={props.hide ? "hide" : ""}>
       <ul>
@@ -29,7 +29,7 @@ export const ProfileDropdown = (props) => {
           <Link to="/">{SwitchAccountIcon()}Switch Accounts</Link>
         </li>
         <li>
-          <Link to="/">Log Out</Link>
+          <a href="http://localhost:5555/api/users/logout">Log Out</a>
         </li>
       </ul>
     </ProfileDropdownMainContainer>

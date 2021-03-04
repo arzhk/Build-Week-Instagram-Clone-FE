@@ -5,15 +5,16 @@ export default function (state = {}, action) {
         ...state,
         ...action.payload,
       };
-    case "ADD_FAVOURITE":
+    case "CLEAR_USER_INFO":
       return {
         ...state,
-        favourites: [...state.favourites, action.payload],
-      };
-    case "REMOVE_FAVOURITE":
-      return {
-        ...state,
-        favourites: state.favourites.filter((favourite) => favourite.id !== action.payload.id),
+        name: "",
+        surname: "",
+        username: "",
+        img: "",
+        searchHistory: [],
+        following: [],
+        followers: [],
       };
     default:
       return state;

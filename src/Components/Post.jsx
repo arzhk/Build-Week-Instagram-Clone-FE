@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { theme } from "../Assets/theme";
 import { Link } from "react-router-dom";
+import Moment from "react-moment";
 import styled, { keyframes } from "styled-components";
 import { LikeIcon, UnlikeIcon, CommentIcon, ShareIcon, SaveIcon, MoreIcon, EmojiIcon } from "../Assets/PostIcons";
 import SpriteSheet from "../Assets/spritesheet.png";
@@ -21,9 +22,17 @@ const Post = (props) => {
   const [showMore, setShowMore] = useState(false);
   const [showPostOptions, setShowPostOptions] = useState(false);
   const [showPopupPost, setShowPopupPost] = useState(false);
-  const str = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo esse sed id quod nostrum, impedit, cum in
-              incidunt, inventore fugiat ut et? Delectus culpa magnam test neque consequuntur
-              ratione eum reiciendis.`;
+  const [comments, setComments] = useState([]);
+
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`http://localhost:5555/api/posts/${props.post._id}/comments`, {
+        credentials: "include",
+      });
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {}
+  };
 
   const likePostToggler = () => {
     setIsLiked(!isLiked);
@@ -52,17 +61,32 @@ const Post = (props) => {
     setShowPopupPost(!showPopupPost);
   };
 
+  useEffect(() => {
+    fetchComments();
+  }, []);
+
+  console.log(props);
+
   return (
     <>
-      {showPostOptions && <MorePopup showPostOptions={showPostOptionsHandler} />}
-      {showPopupPost && <PopupPost showPopupPost={showPopupPostHandler} showPostOptions={showPostOptionsHandler} />}
+      {showPostOptions && <MorePopup showPostOptions={showPostOptionsHandler} postUserId={props.post.user._id} />}
+      {showPopupPost && (
+        <PopupPost
+          post={props.post}
+          comments={comments}
+          showPopupPost={showPopupPostHandler}
+          showPostOptions={showPostOptionsHandler}
+        />
+      )}
       <PostMainContainer>
         <PostHeader>
           <div className="left">
-            <div className="post-profile-picture"></div>
+            <div className="post-profile-picture">
+              <img src={props.post.user.image} alt="profile-picture" />
+            </div>
             <div>
-              <Link to="#">Username</Link>
-              <small>Location, Country</small>
+              <Link to="#">{props.post.username.toLowerCase()}</Link>
+              <small>{props.post.location}</small>
             </div>
           </div>
           <div className="right">
@@ -71,6 +95,7 @@ const Post = (props) => {
         </PostHeader>
         <PostImage onDoubleClick={() => likePost()}>
           {showLargeHeart && <div className="liked-heart-large"></div>}
+          <img src={props.post.image} alt="image" />
         </PostImage>
 
         <PostFooter>
@@ -88,26 +113,37 @@ const Post = (props) => {
           </PostIconBar>
           <PostCaption>
             <Link to="#" className="number-of-likes">
-              11 likes
+              {props.post.likes.length} likes
             </Link>
             <div>
-              <Link to="#">Username</Link>
+              <Link to="#">{props.post.username.toLowerCase()}</Link>
               {showMore ? (
-                <p>{str}</p>
+                <p>{props.post.text}</p>
               ) : (
                 <p>
-                  {str.split("").splice(0, 35).join("")}... <button onClick={showMoreHandler}>more</button>
+                  {props.post.text.split("").splice(0, 35).join("")}... <button onClick={showMoreHandler}>more</button>
                 </p>
               )}
             </div>
-            <PostComments>
-              <button onClick={showPopupPostHandler}>View all 17 comments</button>
-              <SingleComment>
-                <Link to="#">Username</Link>
-                <p>Comment</p>
-              </SingleComment>
-            </PostComments>
-            <small>5 HOURS AGO</small>
+            {comments.length > 0 && (
+              <PostComments>
+                {comments.length > 3 && (
+                  <button onClick={showPopupPostHandler}>View all {props.post.comments.length} comments</button>
+                )}
+                {comments.slice(0, 3).map((comment) => (
+                  <SingleComment>
+                    <Link to="#">{comment.user}</Link>
+                    <p>{comment.text}</p>
+                  </SingleComment>
+                ))}
+              </PostComments>
+            )}
+            <small>
+              <Moment fromNow ago>
+                {props.post.createdAt}
+              </Moment>{" "}
+              ago
+            </small>
           </PostCaption>
           <PostNewComment>
             <div className="left">
@@ -148,6 +184,11 @@ const PostHeader = styled.div`
       background-color: black;
       border-radius: 50%;
       margin-right: 14px;
+      overflow: hidden;
+      img {
+        height: 32px;
+        width: 32px;
+      }
     }
     > div {
       display: flex;
@@ -185,14 +226,13 @@ const slideInFwdCenter = keyframes`
 
 const PostImage = styled.div`
   width: 100%;
-  height: 400px;
+  overflow: hidden;
   border-top: 1px solid ${theme.main.grey};
-  background-color: black;
+  background-color: white;
   position: relative;
   display: flex;
-  align-items: center;
   justify-content: center;
-
+  align-items: center;
   .liked-heart-large {
     background-image: url(${SpriteSheet});
     background-repeat: no-repeat;
@@ -264,6 +304,7 @@ const PostCaption = styled.div`
   }
   small {
     color: ${theme.a.light};
+    text-transform: uppercase;
   }
 `;
 

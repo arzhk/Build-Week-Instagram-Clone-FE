@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Button } from "react-bootstrap";
+import { Button, Alert } from "react-bootstrap";
 import { theme } from "../../Assets/theme";
 import { Link } from "react-router-dom";
 import FacebookIcon from "@material-ui/icons/Facebook";
@@ -8,10 +8,12 @@ import styled from "styled-components";
 import SpriteSheet from "../../Assets/spritesheet.png";
 import GetAppContainer from "./GetAppContainer";
 import LoginFooter from "./LoginFooter";
+import Spinner from "../Loaders/Spinner";
 
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
+  setUser: (data) => dispatch({ type: "UPDATE_USER_INFO", payload: data }),
   setError: (error) => dispatch({ type: "SET_ERROR", payload: error }),
   showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
 });
@@ -22,9 +24,48 @@ const Login = (props) => {
     password: "",
   });
   const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const loginHandler = async (event) => {
+    event.preventDefault();
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:5555/api/users/login", {
+        method: "POST",
+        body: JSON.stringify(inputData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (!data.errors) {
+        if (props.errors.show) {
+          props.setError();
+          props.showErrors(false);
+        }
+        setTimeout(() => {
+          setLoading(false);
+          props.setUser(data);
+          props.history.push("/");
+        }, 2000);
+      } else {
+        props.setError([{ ...data.errors[0] }]);
+        props.showErrors(true);
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const inputDataHandler = (event) => {
     setInputData({ ...inputData, [event.target.name]: event.target.value });
+    if (event.keyCode === 13) {
+      loginHandler();
+    }
   };
 
   useEffect(() => {
@@ -36,32 +77,49 @@ const Login = (props) => {
       <LoginMainWrap>
         <LoginMainContainer>
           <h1></h1>
-          <form>
-            <input
-              name="username"
-              placeholder="Phone number, username or email"
-              required
-              value={inputData.username}
-              onChange={(event) => inputDataHandler(event)}
-            />
-            <input
-              name="password"
-              placeholder="Password"
-              required
-              value={inputData.password}
-              onChange={(event) => inputDataHandler(event)}
-            />
-            <Button disabled={disabled}>Log In</Button>
-          </form>
+          {loading ? (
+            <div className="spinner">
+              <Spinner />
+            </div>
+          ) : (
+            <form onSubmit={loginHandler}>
+              <input
+                name="username"
+                placeholder="Phone number, username or email"
+                required
+                value={inputData.username}
+                onChange={(event) => inputDataHandler(event)}
+              />
+              <input
+                name="password"
+                placeholder="Password"
+                type="password"
+                required
+                value={inputData.password}
+                onChange={(event) => inputDataHandler(event)}
+              />
+              <Button type="submit" disabled={disabled}>
+                Log In
+              </Button>
+              {props.errors.show && (
+                <Alert className="register-error" variant="danger">
+                  {props.errors.errors[0].msg}
+                </Alert>
+              )}
+            </form>
+          )}
           <MiddleContainer>
             <small>OR</small>
           </MiddleContainer>
 
           <BottomContainer>
-            <Button>
-              <FacebookIcon />
-              Log in with Facebook
-            </Button>
+            <a href="http://localhost:5555/api/users/facebook">
+              <Button>
+                <FacebookIcon />
+                Log in with Facebook
+              </Button>
+            </a>
+
             <Link to="/forgotpassword">Forgot password?</Link>
           </BottomContainer>
         </LoginMainContainer>
@@ -93,6 +151,12 @@ const LoginMainContainer = styled.div`
   margin: 0 0 10px;
   text-align: center;
 
+  .spinner {
+    display: flex;
+    justify-content: center;
+    padding: 30px 149px 26px;
+  }
+
   > h1 {
     background-image: url(${SpriteSheet});
     background-repeat: no-repeat;
@@ -110,39 +174,47 @@ const LoginMainContainer = styled.div`
     margin-top: 24px;
     flex: 0 0 auto;
     padding: 0px 40px;
-  }
 
-  > form > input {
-    width: 268px;
-    padding: 6px;
-    margin: 0px 0px 10px;
-    border: 1px solid ${theme.main.grey};
-    border-radius: 3px;
-    background-color: rgba(218, 218, 218, 0.1);
-    font-size: 14px;
-  }
+    .register-error {
+      margin: 0;
+      margin-top: 10px;
+      background-color: transparent;
+      border: none;
+      color: ${theme.main.error};
+      padding: 0 12px;
+      max-width: 268px;
+      font-size: 14px;
+    }
+    > input {
+      width: 268px;
+      padding: 6px;
+      margin: 0px 0px 10px;
+      border: 1px solid ${theme.main.grey};
+      border-radius: 3px;
+      background-color: rgba(218, 218, 218, 0.1);
+      font-size: 14px;
 
-  > form > input::placeholder {
-    color: rgba(38, 38, 38, 0.5);
-    font-size: 0.75rem;
-  }
-
-  > form > input:focus {
-    outline: none;
-  }
-
-  > form > button {
-    width: 100%;
-    height: 30px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    background-color: ${theme.main.lightblue};
-    padding: 4px;
-    border: none;
-    transition: opacity 0.25s ease;
-  }
-  > form > button:disabled {
-    opacity: 0.3;
+      ::placeholder {
+        color: rgba(38, 38, 38, 0.5);
+        font-size: 0.75rem;
+      }
+      :focus {
+        outline: none;
+      }
+    }
+    > button {
+      width: 100%;
+      height: 30px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      background-color: ${theme.main.lightblue};
+      padding: 4px;
+      border: none;
+      transition: opacity 0.25s ease;
+      :disabled {
+        opacity: 0.3;
+      }
+    }
   }
 `;
 
@@ -153,32 +225,30 @@ const MiddleContainer = styled.div`
   > small {
     color: rgba(38, 38, 38, 0.5);
     font-weight: 500;
-  }
-
-  > small::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 12%;
-    right: 58%;
-    height: 1px;
-    background-color: ${theme.main.grey};
-  }
-
-  > small::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 12%;
-    left: 58%;
-    height: 1px;
-    background-color: ${theme.main.grey};
+    ::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 12%;
+      right: 58%;
+      height: 1px;
+      background-color: ${theme.main.grey};
+    }
+    ::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 12%;
+      left: 58%;
+      height: 1px;
+      background-color: ${theme.main.grey};
+    }
   }
 `;
 
 const BottomContainer = styled.div`
   margin: 20px 0px;
-  > button {
+  > a > button {
     background-color: transparent;
     border: none;
     color: ${theme.main.facebook};
@@ -187,15 +257,16 @@ const BottomContainer = styled.div`
     display: flex;
     align-items: center;
     margin: 0 auto;
-  }
-
-  > button:hover {
-    background-color: transparent;
-    color: ${theme.main.facebook};
-  }
-
-  > button svg {
-    margin-right: 0.25rem;
+    :hover {
+      background-color: transparent;
+      color: ${theme.main.facebook};
+    }
+    :active {
+      box-shadow: none;
+    }
+    svg {
+      margin-right: 0.25rem;
+    }
   }
 
   > a {
@@ -214,10 +285,10 @@ const LoginRegisterContainer = styled.div`
   > p {
     margin: 0;
     font-size: 14px;
-  }
-  > p > a {
-    color: ${theme.main.lightblue};
-    font-weight: 500;
+    > a {
+      color: ${theme.main.lightblue};
+      font-weight: 500;
+    }
   }
 `;
 

@@ -22,6 +22,7 @@ import SearchBox from "./SearchBox";
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
+  setSearchResults: (searchResults) => dispatch({ type: "STORE_SEARCH_RESULTS", payload: searchResults }),
   setError: (error) => dispatch({ type: "SET_ERROR", payload: error }),
   showErrors: (boolean) => dispatch({ type: "DISPLAY_ERRORS", payload: boolean }),
 });
@@ -39,6 +40,25 @@ const NavBar = (props) => {
   const [animatePanel, setAnimatePanel] = useState(false);
   const [currentPage, setCurrentPage] = useState(props.location.pathname);
   const [searchInput, setSearchInput] = useState("");
+
+  const fetchSearchResults = async () => {
+    try {
+      const response = await fetch("http://localhost:5555/api/users/search", {
+        method: "POST",
+        body: JSON.stringify({ searchTerm: searchInput }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (!data.errors) {
+        props.setSearchResults(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const toggleActivityHandler = () => {
     if (showActivity) {
@@ -72,13 +92,19 @@ const NavBar = (props) => {
     await setSearchInput("");
   };
 
-  const searchInputHandler = (event) => {
+  const searchInputHandler = async (event) => {
     setSearchInput(event.target.value);
   };
 
   useEffect(() => {
     setCurrentPage(props.location.pathname);
   }, [props.location.pathname]);
+
+  useEffect(() => {
+    if (searchInput.length !== 0) {
+      if (!searchInput.startsWith(" ")) fetchSearchResults();
+    }
+  }, [searchInput]);
 
   return (
     <NavBarMainWrapper>
@@ -94,7 +120,7 @@ const NavBar = (props) => {
           <button onClick={() => clearInput()}>
             <CloseIcon />
           </button>
-          {searchInput.length !== 0 && <SearchBox />}
+          {searchInput.length !== 0 && !searchInput.startsWith(" ") && <SearchBox />}
         </Middle>
         <Right>
           <ul>
@@ -107,7 +133,9 @@ const NavBar = (props) => {
                 )}
               </li>
             ))}
-            <li onClick={toggleProfileDropdownHandler}></li>
+            <li onClick={toggleProfileDropdownHandler}>
+              <img src={props.user.image} />
+            </li>
           </ul>
           {showActivity && <Activity hide={animatePanel} />}
           {showProfileDropdown && <ProfileDropdown hide={animatePanel} />}
@@ -243,11 +271,20 @@ const Right = styled.div`
     }
 
     li:last-of-type {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       height: 22px;
       width: 22px;
-      background-color: blue;
+      background-color: ${theme.main.grey};
+      overflow: hidden;
       border-radius: 50%;
+      border: 1px solid ${theme.main.grey};
       cursor: pointer;
+      > img {
+        height: 22px;
+        width: 22px;
+      }
     }
   }
   span {
