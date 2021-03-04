@@ -1,21 +1,16 @@
 import React from 'react';
 import {Col} from 'react-bootstrap';
 import styled from "styled-components";
-import PostModal from './PostModal';
 
 function SinglePost() {
-    const [modalShow, setModalShow] = React.useState(false);
 
     return (
         <>
         <Col md={4} style={{position: 'relative'}}>
-        <Post src="http://placehold.it/50x50"  onClick={() => setModalShow(true)}/>
+        <Post src="http://placehold.it/50x50"  />
         <Overlay/>
         </Col>
-        <PostModal
-          show={modalShow}
-          onHide={() => setModalShow(false)}
-        />
+       
         </>
     )
 }
