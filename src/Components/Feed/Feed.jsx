@@ -112,7 +112,6 @@ const Left = styled.div`
   scrollbar-width: none;
   margin: 0 auto;
   position: relative;
-
   ::-webkit-scrollbar {
     display: none;
   }

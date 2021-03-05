@@ -6,6 +6,7 @@ import styled from "styled-components";
 import Login from "./Components/Login_Register/Login";
 import Register from "./Components/Login_Register/Register";
 import ForgotPassword from "./Components/Login_Register/ForgotPassword";
+import ProfilePage from './Components/Profile_Page/ProfilePage';
 import NavBar from "./Components/NavBar/NavBar";
 import Feed from "./Components/Feed/Feed";
 import Explore from "./Components/Explore";
@@ -38,9 +39,10 @@ const Main = (props) => {
         </>
       ) : (
         <>
-          <Route path="/" component={NavBar} />
-          <Switch>
+        <Route path="/" component={NavBar} />
+        <Switch>
             <Route exact path="/" component={Feed} />
+            <Route exact path="/profile" component={ProfilePage}/>
             <Route exact path="/explore" component={Explore} />
             <Route exact path="/direct/inbox/" component={Direct} />
             <Redirect to="/" />

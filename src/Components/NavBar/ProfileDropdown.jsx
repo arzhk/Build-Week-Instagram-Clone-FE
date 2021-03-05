@@ -17,7 +17,7 @@ const ProfileDropdown = (props) => {
     <ProfileDropdownMainContainer className={props.hide ? "hide" : ""}>
       <ul>
         <li>
-          <Link to="/">{ProfileIcon()}Profile</Link>
+          <Link to="/profile">{ProfileIcon()}Profile</Link>
         </li>
         <li>
           <Link to="/">{SavedIcon()}Saved</Link>
