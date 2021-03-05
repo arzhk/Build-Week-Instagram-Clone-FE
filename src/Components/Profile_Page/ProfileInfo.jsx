@@ -67,7 +67,10 @@ function ProfileInfo(props) {
 }
 const ProfilePic = styled.img`
   width: 160px;
+  height: 160px;
+  object-fit: cover;
   border-radius: 100%;
+  background-color: ${theme.main.grey};
 `;
 
 const ProfileNickname = styled.h1`

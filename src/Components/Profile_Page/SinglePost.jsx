@@ -15,7 +15,10 @@ function SinglePost(props) {
 const Post = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  overflow: hidden;
+  max-height: 300px;
+  margin-bottom: 30px;
 `;
 
 const Overlay = styled.div`
