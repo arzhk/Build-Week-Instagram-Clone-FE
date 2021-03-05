@@ -1,21 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { theme } from "../../Assets/theme";
 import ProfileInfo from "./ProfileInfo";
 import ProfilePosts from "./ProfilePosts";
 import styled from "styled-components";
 
 export default function ProfilePage() {
-    return (
-       <Container fluid>
-               <ProfileInfo/>
-               <ProfilePosts/>
-       </Container>
-    )
+  const [myPosts, setMyPosts] = useState([]);
+
+  const fetchMyPosts = async () => {
+    try {
+      const response = await fetch("http://localhost:5555/api/posts/me", { credentials: "include" });
+      const data = await response.json();
+      console.log(data);
+      setMyPosts(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMyPosts();
+  }, []);
+
+  return (
+    <Container fluid>
+      <ProfileInfo myPosts={myPosts} />
+      <ProfilePosts myPosts={myPosts} />
+    </Container>
+  );
 }
 
-
-
-const Container = styled.div`  
-    overflow-y: scroll;
-    max-height:100vh;
+const Container = styled.div`
+  overflow-y: scroll;
+  max-height: 100vh;
 `;

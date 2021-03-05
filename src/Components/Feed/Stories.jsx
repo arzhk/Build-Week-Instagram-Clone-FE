@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { theme } from "../../Assets/theme";
 import styled from "styled-components";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import SpriteSheet from "../../Assets/spritesheet.png";
 import SpriteSheet2 from "../../Assets/spritesheet_2.png";
 
@@ -51,10 +49,10 @@ const Stories = (props) => {
           <StoriesMainContainer>
             <Spacer spacerSize={spacerSize} />
             {spacerSize !== 0 && <div id="arrow-left" className="arrow-button-left" onClick={scrollHandler} />}
-            {stories.map((user) => (
-              <Story>
+            {stories.map((user, index) => (
+              <Story key={index}>
                 <div className="profile-picture">
-                  <img src={user.image} alt="profile-picture" />
+                  <img src={user.image} alt="profile" />
                 </div>
                 <div className="story-outline"></div>
                 <div>{user.username.toLowerCase()}</div>

@@ -1,7 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { theme } from "../Assets/theme";
-import styled from "styled-components";
 
 const mapStateToProps = (state) => state;
 

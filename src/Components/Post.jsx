@@ -8,6 +8,7 @@ import { LikeIcon, UnlikeIcon, CommentIcon, ShareIcon, SaveIcon, MoreIcon, Emoji
 import SpriteSheet from "../Assets/spritesheet.png";
 import MorePopup from "./MorePopup";
 import PopupPost from "./PopupPost";
+import PostEditPanel from "./PostEditPanel";
 
 const mapStateToProps = (state) => state;
 
@@ -17,12 +18,13 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const Post = (props) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [showLargeHeart, setShowLargeHeart] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [showPostOptions, setShowPostOptions] = useState(false);
   const [showPopupPost, setShowPopupPost] = useState(false);
+  const [showEditPanel, setShowEditPanel] = useState(false);
   const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState("");
 
   const fetchComments = async () => {
     try {
@@ -34,16 +36,56 @@ const Post = (props) => {
     } catch (error) {}
   };
 
-  const likePostToggler = () => {
-    setIsLiked(!isLiked);
+  const likeHandler = async () => {
+    try {
+      await fetch(`http://localhost:5555/api/posts/${props.post._id}/like/${props.user._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      props.fetchPosts();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const likePost = () => {
-    setIsLiked(true);
-    toggleLargeHeart();
+  const commentHandler = async () => {
+    try {
+      if (commentInput.length > 0 && !commentInput.startsWith(" ")) {
+        const newComment = {
+          user: props.user.username,
+          text: commentInput,
+        };
+
+        await fetch(`http://localhost:5555/api/posts/${props.post._id}/comments`, {
+          method: "POST",
+          body: JSON.stringify(newComment),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+        setCommentInput("");
+        props.fetchPosts();
+        fetchComments();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const commentSubmitHandler = (event) => {
+    if (event.keyCode === 13) {
+      commentHandler();
+    }
   };
 
   const toggleLargeHeart = () => {
+    if (props.post.likes.findIndex((userId) => userId === props.user._id) === -1) {
+      likeHandler();
+    }
     setShowLargeHeart(true);
     setTimeout(() => {
       setShowLargeHeart(false);
@@ -65,24 +107,40 @@ const Post = (props) => {
     fetchComments();
   }, []);
 
-  console.log(props);
-
   return (
     <>
-      {showPostOptions && <MorePopup showPostOptions={showPostOptionsHandler} postUserId={props.post.user._id} />}
+      {showPostOptions && (
+        <MorePopup
+          showPostOptions={showPostOptionsHandler}
+          fetchPosts={() => props.fetchPosts()}
+          postUserId={props.post.user._id}
+          postId={props.post._id}
+          toggleEditPanel={() => setShowEditPanel(!showEditPanel)}
+        />
+      )}
+      {showEditPanel && (
+        <PostEditPanel
+          post={props.post}
+          fetchPosts={() => props.fetchPosts()}
+          toggleEditPanel={() => setShowEditPanel(!showEditPanel)}
+        />
+      )}
       {showPopupPost && (
         <PopupPost
           post={props.post}
           comments={comments}
           showPopupPost={showPopupPostHandler}
           showPostOptions={showPostOptionsHandler}
+          fetchPosts={() => props.fetchPosts()}
+          fetchComments={() => fetchComments()}
+          commentSubmitHandler={() => commentSubmitHandler()}
         />
       )}
       <PostMainContainer>
         <PostHeader>
           <div className="left">
             <div className="post-profile-picture">
-              <img src={props.post.user.image} alt="profile-picture" />
+              <img src={props.post.user.image} alt="profile" />
             </div>
             <div>
               <Link to="#">{props.post.username.toLowerCase()}</Link>
@@ -93,16 +151,16 @@ const Post = (props) => {
             <button onClick={setShowPostOptions}>{MoreIcon()}</button>
           </div>
         </PostHeader>
-        <PostImage onDoubleClick={() => likePost()}>
+        <PostImage onDoubleClick={() => toggleLargeHeart()}>
           {showLargeHeart && <div className="liked-heart-large"></div>}
-          <img src={props.post.image} alt="image" />
+          <img src={props.post.image} alt="post" />
         </PostImage>
 
         <PostFooter>
           <PostIconBar>
             <div className="left">
-              <button className="like-button" onClick={likePostToggler}>
-                {isLiked ? UnlikeIcon() : LikeIcon()}
+              <button className="like-button" onClick={likeHandler}>
+                {props.post.likes.findIndex((userId) => userId === props.user._id) !== -1 ? UnlikeIcon() : LikeIcon()}
               </button>
               <button>{CommentIcon()}</button>
               <button>{ShareIcon()}</button>
@@ -130,8 +188,8 @@ const Post = (props) => {
                 {comments.length > 3 && (
                   <button onClick={showPopupPostHandler}>View all {props.post.comments.length} comments</button>
                 )}
-                {comments.slice(0, 3).map((comment) => (
-                  <SingleComment>
+                {comments.slice(0, 3).map((comment, index) => (
+                  <SingleComment key={index}>
                     <Link to="#">{comment.user}</Link>
                     <p>{comment.text}</p>
                   </SingleComment>
@@ -148,10 +206,16 @@ const Post = (props) => {
           <PostNewComment>
             <div className="left">
               <button>{EmojiIcon()}</button>
-              <input type="text" placeholder="Add a comment..." />
+              <input
+                type="text"
+                placeholder="Add a comment..."
+                value={commentInput}
+                onChange={(event) => setCommentInput(event.target.value)}
+                onKeyDown={commentSubmitHandler}
+              />
             </div>
             <div className="right">
-              <button>Post</button>
+              <button onClick={commentHandler}>Post</button>
             </div>
           </PostNewComment>
         </PostFooter>
@@ -221,11 +285,13 @@ const slideInFwdCenter = keyframes`
     0% { opacity: 0; transform: scale(0); }
     15% { opacity: 1; transform: scale(1); }
     70% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(1); }
+    90% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0); }
 `;
 
 const PostImage = styled.div`
   width: 100%;
+  max-height: 767px;
   overflow: hidden;
   border-top: 1px solid ${theme.main.grey};
   background-color: white;
@@ -233,13 +299,17 @@ const PostImage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  img {
+    width: 100%;
+  }
   .liked-heart-large {
+    position: absolute;
     background-image: url(${SpriteSheet});
     background-repeat: no-repeat;
     height: 100px;
     width: 100px;
     background-position: -14px -17px;
-    z-index: 99;
+    z-index: 999;
     animation: ${slideInFwdCenter} 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   }
 `;
@@ -274,6 +344,7 @@ const PostCaption = styled.div`
   font-weight: 600;
   margin-bottom: 8px;
   padding: 0px 16px;
+  background-color: white;
   .number-of-likes {
     color: ${theme.main.darkgrey};
     margin-bottom: 8px;
@@ -341,13 +412,17 @@ const PostNewComment = styled.div`
   padding: 0 16px;
   height: 56px;
   border-top: 1px solid ${theme.main.grey};
+  background-color: white;
   button {
     border: none;
     background-color: transparent;
     padding: 0;
   }
-  > .left > button {
-    margin-right: 10px;
+  > .left {
+    width: 100%;
+    > button {
+      margin-right: 10px;
+    }
   }
   > .right > button {
     color: ${theme.main.lightblue};
@@ -358,6 +433,7 @@ const PostNewComment = styled.div`
     border: none;
     font-size: 14px;
     color: ${theme.main.darkgrey};
+    width: 75%;
     :focus {
       outline: none;
     }

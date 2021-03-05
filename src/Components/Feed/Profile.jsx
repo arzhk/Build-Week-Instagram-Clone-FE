@@ -16,10 +16,10 @@ function Profile(props) {
     <ProfileMainContainer>
       <div>
         <div className="profile-picture">
-          <img src={props.user.image} alt="profile-picture" />
+          <img src={props.user.image} alt="user-profile" />
         </div>
         <div>
-          <Link to="#">{props.user.username.toLowerCase()}</Link>
+          <Link to="/profile">{props.user.username.toLowerCase()}</Link>
           <p>{props.user.name}</p>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import React from "react";
-import { theme } from "../../Assets/theme";
 import styled from "styled-components";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 

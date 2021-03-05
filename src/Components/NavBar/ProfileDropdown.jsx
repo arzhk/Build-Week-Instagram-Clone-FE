@@ -16,19 +16,19 @@ const ProfileDropdown = (props) => {
   return (
     <ProfileDropdownMainContainer className={props.hide ? "hide" : ""}>
       <ul>
-        <li>
+        <li onClick={() => props.toggleMenu()}>
           <Link to="/profile">{ProfileIcon()}Profile</Link>
         </li>
-        <li>
+        <li onClick={() => props.toggleMenu()}>
           <Link to="/">{SavedIcon()}Saved</Link>
         </li>
-        <li>
+        <li onClick={() => props.toggleMenu()}>
           <Link to="/">{SettingsIcon()}Settings</Link>
         </li>
-        <li>
+        <li onClick={() => props.toggleMenu()}>
           <Link to="/">{SwitchAccountIcon()}Switch Accounts</Link>
         </li>
-        <li>
+        <li onClick={() => props.toggleMenu()}>
           <a href="http://localhost:5555/api/users/logout">Log Out</a>
         </li>
       </ul>

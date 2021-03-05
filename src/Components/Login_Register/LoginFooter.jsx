@@ -22,16 +22,16 @@ function LoginFooter() {
   return (
     <LoginFooterContainer>
       <ul>
-        {footerLinks.map((link) => (
-          <Link>
+        {footerLinks.map((link, index) => (
+          <Link to="#" key={index}>
             <li>{link}</li>
           </Link>
         ))}
       </ul>
       <div>
         <select>
-          {languages.map((language) => (
-            <option>{language}</option>
+          {languages.map((language, index) => (
+            <option key={index}>{language}</option>
           ))}
         </select>
         <small>© 2021 Instagram from Facebook</small>

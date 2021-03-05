@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { theme } from "../../Assets/theme";
 import styled, { keyframes } from "styled-components";
 import SpriteSheet from "../../Assets/spritesheet.png";
 import Spinner from "../Loaders/Spinner";

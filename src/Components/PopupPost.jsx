@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, createRef } from "react";
 import { connect } from "react-redux";
 import { theme } from "../Assets/theme";
 import { Link } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import Moment from "react-moment";
 import { LikeIcon, UnlikeIcon, CommentIcon, ShareIcon, SaveIcon, MoreIcon, EmojiIcon } from "../Assets/PostIcons";
-import { Portal } from "@material-ui/core";
 
 const mapStateToProps = (state) => state;
 
@@ -16,8 +15,8 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const PopupPost = (props) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [commentInput, setCommentInput] = useState("");
+  const commentsEnd = createRef();
 
   const followHandler = async (userId) => {
     try {
@@ -34,13 +33,71 @@ const PopupPost = (props) => {
     }
   };
 
+  const likeHandler = async () => {
+    try {
+      await fetch(`http://localhost:5555/api/posts/${props.post._id}/like/${props.user._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      props.fetchPosts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const commentHandler = async () => {
+    try {
+      if (commentInput.length > 0 && !commentInput.startsWith(" ")) {
+        const newComment = {
+          user: props.user.username,
+          text: commentInput,
+        };
+
+        await fetch(`http://localhost:5555/api/posts/${props.post._id}/comments`, {
+          method: "POST",
+          body: JSON.stringify(newComment),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+        setCommentInput("");
+        props.fetchComments();
+        props.fetchPosts();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const commentSubmitHandler = (event) => {
+    if (event.keyCode === 13) {
+      commentHandler();
+    }
+  };
+
+  const scrollToBottom = () => {
+    commentsEnd.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [props.comments]);
+
   return (
     <PopupPostWrapper>
       <PopupBackgroundDim onClick={props.showPopupPost} />
       <PopupPostContainer>
         <div className="left">
           <div className="post-image">
-            <img src={props.post.image} alt="picture" />
+            <img src={props.post.image} alt="post" />
           </div>
         </div>
         <div className="right">
@@ -49,7 +106,7 @@ const PopupPost = (props) => {
             <PopupPostHeader>
               <div className="left">
                 <div className="profile-picture">
-                  <img src={props.post.user.image} alt="profile-picture" />
+                  <img src={props.post.user.image} alt="profile" />
                 </div>
                 <div className="post-info">
                   <Link to="#">{props.post.username}</Link>
@@ -70,7 +127,7 @@ const PopupPost = (props) => {
             </PopupPostHeader>
             <PopupPostCaption>
               <div className="profile-picture">
-                <img src={props.post.user.image} alt="profile-picture" />
+                <img src={props.post.user.image} alt="profile" />
               </div>
               <div className="post-info">
                 <div>
@@ -87,22 +144,25 @@ const PopupPost = (props) => {
             </PopupPostCaption>
             <PopupPostComments>
               {props.comments.map((comment) => (
-                <SingleComment>
-                  <div className="profile-picture"></div>
-                  <div className="comment-content">
-                    <Link to="#">{comment.user}</Link>
-                    <p>{comment.text}</p>
-                    <div>
-                      <small>
-                        <Moment fromNow ago>
-                          {comment.createdAt}
-                        </Moment>
-                      </small>
-                      <button>{Math.floor(Math.random() * 100)} likes</button>
-                      <button>Reply</button>
+                <>
+                  <SingleComment>
+                    <div className="profile-picture"></div>
+                    <div className="comment-content">
+                      <Link to="#">{comment.user}</Link>
+                      <p>{comment.text}</p>
+                      <div>
+                        <small>
+                          <Moment fromNow ago>
+                            {comment.createdAt}
+                          </Moment>
+                        </small>
+                        <button>0 likes</button>
+                        <button>Reply</button>
+                      </div>
                     </div>
-                  </div>
-                </SingleComment>
+                  </SingleComment>
+                  <div ref={commentsEnd}></div>
+                </>
               ))}
             </PopupPostComments>
           </div>
@@ -110,7 +170,9 @@ const PopupPost = (props) => {
           <PopupPostFooter>
             <PopupPostIconBar>
               <div className="left">
-                <button className="like-button">{isLiked ? UnlikeIcon() : LikeIcon()}</button>
+                <button className="like-button" onClick={likeHandler}>
+                  {props.post.likes.findIndex((userId) => userId === props.user._id) !== -1 ? UnlikeIcon() : LikeIcon()}
+                </button>
                 <button>{CommentIcon()}</button>
                 <button>{ShareIcon()}</button>
               </div>
@@ -126,17 +188,20 @@ const PopupPost = (props) => {
               ago
             </small>
             <PopupPostNewComment>
-              <div class="left">
+              <div className="left">
                 <button>{EmojiIcon()}</button>
                 <input
                   type="text"
                   placeholder="Add a comment..."
                   value={commentInput}
                   onChange={(event) => setCommentInput(event.target.value)}
+                  onKeyDown={commentSubmitHandler}
                 />
               </div>
-              <div class="right">
-                <button disabled={commentInput.length === 0}>Post</button>
+              <div className="right">
+                <button disabled={commentInput.length === 0} onClick={commentHandler}>
+                  Post
+                </button>
               </div>
             </PopupPostNewComment>
           </PopupPostFooter>
@@ -174,24 +239,36 @@ const PopupPostContainer = styled.div`
   box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.05);
   text-align: center;
   display: flex;
-  /*   min-height: 450px;
-  max-height: 650px; */
+  align-items: center;
   position: relative;
   z-index: 99;
+  max-height: 612px;
   .left {
+    /*    overflow: hidden; */
     .post-image {
-      /*    height: 650px;
-      width: 500px; */
-      background-color: ${theme.main.darkgrey};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        object-fit: cover;
+        max-width: 630px;
+        max-height: 612px;
+      }
+
+      background-color: ${theme.main.grey};
     }
   }
 
   .right {
+    max-height: 612px;
     width: 335px;
     background-color: white;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    > div:first-child {
+      height: 100%;
+    }
   }
 
   .profile-picture {
@@ -292,7 +369,7 @@ const PopupPostComments = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  height: 400px;
+  max-height: 338px;
   -ms-overflow-style: none;
   scrollbar-width: none;
 

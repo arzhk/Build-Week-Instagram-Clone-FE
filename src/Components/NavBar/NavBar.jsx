@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import { Link } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import Logo from "../../Assets/logo.png";
 import SpriteSheet from "../../Assets/spritesheet.png";
 import {
@@ -124,8 +124,8 @@ const NavBar = (props) => {
         </Middle>
         <Right>
           <ul>
-            {navLinks.map((link) => (
-              <li>
+            {navLinks.map((link, index) => (
+              <li key={index}>
                 {link.link ? (
                   <Link to={`${link.link}`}>{currentPage === link.link ? link.iconFilled() : link.icon()}</Link>
                 ) : (
@@ -134,11 +134,11 @@ const NavBar = (props) => {
               </li>
             ))}
             <li onClick={toggleProfileDropdownHandler}>
-              <img src={props.user.image} />
+              <img src={props.user.image} alt="user" />
             </li>
           </ul>
           {showActivity && <Activity hide={animatePanel} />}
-          {showProfileDropdown && <ProfileDropdown hide={animatePanel} />}
+          {showProfileDropdown && <ProfileDropdown hide={animatePanel} toggleMenu={toggleProfileDropdownHandler} />}
         </Right>
         {showActivity && <FullWrap onClick={toggleActivityHandler}></FullWrap>}
         {showProfileDropdown && <FullWrap onClick={toggleProfileDropdownHandler}></FullWrap>}

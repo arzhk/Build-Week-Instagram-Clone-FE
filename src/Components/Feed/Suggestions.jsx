@@ -54,7 +54,7 @@ function Suggestions(props) {
         {suggestions.map((suggestion, index) => (
           <Profile key={index}>
             <div className="profile-icon">
-              <img src={suggestion.image} alt="profile-picture" />
+              <img src={suggestion.image} alt="user" />
             </div>
             <div>
               <div className="user-info">

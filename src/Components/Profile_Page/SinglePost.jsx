@@ -1,33 +1,32 @@
-import React from 'react';
-import {Col} from 'react-bootstrap';
+import React from "react";
+import { Col } from "react-bootstrap";
 import styled from "styled-components";
 
-function SinglePost() {
-
-    return (
-        <>
-        <Col md={4} style={{position: 'relative'}}>
-        <Post src="http://placehold.it/50x50"  />
-        <Overlay/>
-        </Col>
-       
-        </>
-    )
+function SinglePost(props) {
+  return (
+    <>
+      <Col md={4} style={{ position: "relative" }}>
+        <Post src={props.post.image} />
+        <Overlay />
+      </Col>
+    </>
+  );
 }
 const Post = styled.img`
-    width: 100%;
-    margin-top:25px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 `;
 
 const Overlay = styled.div`
-    width: 100%;
-    position: absolute;
-    top:0;
-    bottom:0;
-    right:0;
-    left:0;
-    z-index: 221;
-    background-color:red;
-    display: none;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 221;
+  background-color: red;
+  display: none;
 `;
-export default SinglePost
+export default SinglePost;

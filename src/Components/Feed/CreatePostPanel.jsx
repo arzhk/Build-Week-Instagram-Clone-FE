@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import ImageUploader from "react-images-upload";
 import CheckIcon from "@material-ui/icons/Check";
+import Spinner from "../Loaders/Spinner";
 
 const mapStateToProps = (state) => state;
 
@@ -13,11 +14,66 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const CreatePostPanel = (props) => {
-  const [newPostImage, setNewPostImage] = useState();
+  const [newPostImage, setNewPostImage] = useState({});
+  const [locationInput, setLocationInput] = useState("");
+  const [captionInput, setCaptionInput] = useState("");
   const [isImageSelected, setIsImageSelected] = useState(false);
+  const [isPostUploading, setIsPostUploading] = useState(false);
+
+  const uploadPictureHandler = async () => {
+    try {
+      console.log(newPostImage);
+      setIsPostUploading(true);
+      let formData = new FormData();
+      let blob = new Blob([newPostImage.picture[0]], { type: "img/jpeg" });
+      formData.append("image", blob);
+      const response = await fetch(`http://localhost:5555/api/posts/picture`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.path) {
+        createNewPost(data.path);
+      }
+    } catch (er) {
+      console.log(er);
+    }
+  };
+
+  const createNewPost = async (imagePath) => {
+    try {
+      const newPost = {
+        username: props.user.username,
+        user: props.user._id,
+        image: imagePath,
+        location: locationInput,
+        text: captionInput,
+      };
+
+      const response = await fetch(`http://localhost:5555/api/posts`, {
+        method: "POST",
+        body: JSON.stringify(newPost),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (data._id) {
+        setTimeout(() => {
+          resetHandler();
+          setIsPostUploading(false);
+          props.fetchPosts();
+        }, 2000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const newPostImageUploadHandler = (picture) => {
-    if (newPostImage === null) setNewPostImage({ pictures: picture });
+    setNewPostImage({ picture });
     setIsImageSelected(true);
   };
 
@@ -30,29 +86,49 @@ const CreatePostPanel = (props) => {
   return (
     <>
       <CreatePostPanelContainer right={props.panelRight}>
-        <h2>New Post</h2>
-        <p>Share a moment</p>
-        <ImageUploader
-          withIcon={false}
-          buttonText="Select Image"
-          imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-          maxFileSize={5242880}
-          singleImage={true}
-          withPreview={true}
-          withLabel={false}
-          onChange={newPostImageUploadHandler}
-        />
-        <h4>Add a caption</h4>
-        <textarea />
-        <div className="button-row">
-          <button disabled={!isImageSelected}>
-            <CheckIcon />
-            Submit
-          </button>
-          <button className="cancel-button" onClick={resetHandler}>
-            Cancel
-          </button>
-        </div>
+        {isPostUploading ? <h2>Uploading</h2> : <h2>New Post</h2>}
+
+        {isPostUploading ? (
+          <div className="loading-spinner">
+            <Spinner />
+          </div>
+        ) : (
+          <>
+            <p>Share a moment</p>
+            <ImageUploader
+              withIcon={false}
+              buttonText="Select Image"
+              imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+              maxFileSize={5242880}
+              singleImage={true}
+              withPreview={true}
+              withLabel={false}
+              onChange={newPostImageUploadHandler}
+            />
+            <h5>Where?</h5>
+            <input
+              type="text"
+              placeholder="Location..."
+              value={locationInput}
+              onChange={(event) => setLocationInput(event.target.value)}
+            />
+            <h5>Add a caption</h5>
+            <textarea
+              placeholder="Caption..."
+              value={captionInput}
+              onChange={(event) => setCaptionInput(event.target.value)}
+            />
+            <div className="button-row">
+              <button disabled={!isImageSelected} onClick={uploadPictureHandler}>
+                <CheckIcon />
+                Submit
+              </button>
+              <button className="cancel-button" onClick={resetHandler}>
+                Cancel
+              </button>
+            </div>
+          </>
+        )}
       </CreatePostPanelContainer>
       {props.panelRight !== -400 && <FullPageDimmer onClick={resetHandler} />}
     </>
@@ -70,6 +146,16 @@ const CreatePostPanelContainer = styled.div`
   padding: 100px 30px;
   transition: right 0.25s ease-in-out;
   z-index: 11;
+  overflow: hidden;
+  .loading-spinner {
+    padding: 16px;
+    transform: scale(2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50%;
+    width: 100%;
+  }
   h2 {
     font-weight: 700;
     color: ${theme.main.darkgrey};
@@ -78,10 +164,23 @@ const CreatePostPanelContainer = styled.div`
   p {
     color: ${theme.a.light};
   }
-  h4 {
+  h5 {
     font-weight: 700;
     margin-top: 20px;
     color: ${theme.main.darkgrey};
+  }
+  input {
+    width: 100%;
+    border: 1px solid ${theme.main.grey};
+    background-color: white;
+    color: ${theme.main.darkgrey};
+    padding: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 10px;
+    :focus {
+      outline: none;
+    }
   }
   textarea {
     width: 100%;

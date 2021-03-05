@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { theme } from "../../Assets/theme";
 import { Link } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 
 const mapStateToProps = (state) => state;
 
@@ -16,10 +16,10 @@ const SearchBox = (props) => {
     <>
       {props.search.searchResults.length !== 0 && (
         <SearchBoxContainer>
-          {props.search.searchResults.map((result) => (
-            <SingleSearchResult>
+          {props.search.searchResults.map((result, index) => (
+            <SingleSearchResult key={index}>
               <div className="profile-picture">
-                <img src={result.image} alt="profile-picture" />
+                <img src={result.image} alt="profile" />
               </div>
               <div className="user-info">
                 <Link to="#">{result.username.toLowerCase()}</Link>

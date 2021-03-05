@@ -20,8 +20,8 @@ function Footer() {
   return (
     <FeedFooterMainContainer>
       <ul>
-        {links.map((link) => (
-          <li>
+        {links.map((link, index) => (
+          <li key={index}>
             <Link to="#">{link}</Link>
           </li>
         ))}

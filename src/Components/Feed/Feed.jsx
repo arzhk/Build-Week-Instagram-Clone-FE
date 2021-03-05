@@ -21,6 +21,7 @@ const Feed = (props) => {
   const [newPostPanelRight, setNewPostPanelRight] = useState(-400);
   const [showNewPostPanel, setShowNewPostPanel] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [myPosts, setMyPosts] = useState([]);
 
   const fetchPosts = async () => {
     try {
@@ -30,6 +31,11 @@ const Feed = (props) => {
         /*         const posts = [];
         data.forEach(async (post) => posts.push(post._doc)); */
         setPosts(data);
+      }
+      const response_me = await fetch("http://localhost:5555/api/posts/me", { credentials: "include" });
+      const data_me = await response_me.json();
+      if (!data_me.errors) {
+        setMyPosts(data_me);
       }
     } catch (error) {
       console.log(error);
@@ -56,13 +62,8 @@ const Feed = (props) => {
   };
 
   useEffect(() => {
-    /*    fetchPosts(); */
     fetchPosts();
   }, []);
-
-  useEffect(() => {
-    /*     console.log(posts); */
-  }, [posts]);
 
   return (
     <MainFeedWrap>
@@ -72,9 +73,20 @@ const Feed = (props) => {
             <Col xs={12} lg={8}>
               <Left>
                 <Stories />
-                {posts.map((post, index) => (
-                  <Post key={index} post={post} />
-                ))}
+                {myPosts.length > 0 || posts.length > 0 ? (
+                  <>
+                    {myPosts.map((post, index) => (
+                      <Post key={index} post={post} fetchPosts={fetchPosts} />
+                    ))}
+                    {posts.map((post, index) => (
+                      <Post key={index} post={post} fetchPosts={fetchPosts} />
+                    ))}
+                  </>
+                ) : (
+                  <p className="no-posts w-100 text-center">Follow more people to see posts/stories.</p>
+                )}
+
+                <div className="spacer" style={{ height: 100 }}></div>
               </Left>
             </Col>
             <Col xs={4} className="d-none d-lg-block">
@@ -87,7 +99,13 @@ const Feed = (props) => {
             </Col>
           </Row>
         </Container>
-        {showNewPostPanel && <CreatePostPanel panelRight={newPostPanelRight} toggleNewPostPanel={toggleNewPostPanel} />}
+        {showNewPostPanel && (
+          <CreatePostPanel
+            panelRight={newPostPanelRight}
+            toggleNewPostPanel={toggleNewPostPanel}
+            fetchPosts={fetchPosts}
+          />
+        )}
       </MainFeedContainer>
     </MainFeedWrap>
   );
@@ -107,6 +125,14 @@ const Left = styled.div`
   max-width: 614px;
   overflow: auto;
   height: 100vh;
+  .no-posts {
+    color: white;
+    font-weight: 500;
+    background: linear-gradient(45deg, #f5852999, #dd2a7b99);
+    padding: 10px;
+    border-radius: 3px;
+    font-size: 14px;
+  }
 
   -ms-overflow-style: none;
   scrollbar-width: none;

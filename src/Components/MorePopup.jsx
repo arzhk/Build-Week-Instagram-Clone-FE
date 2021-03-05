@@ -29,13 +29,26 @@ const MorePopup = (props) => {
     }
   };
 
+  const deletePostHandler = async () => {
+    try {
+      await fetch(`http://localhost:5555/api/posts/${props.postId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      setTimeout(() => {
+        props.fetchPosts();
+      }, 500);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (props.user.following.findIndex((userId) => userId === props.postUserId) !== -1) {
       setIsFollowing(true);
     } else {
       setIsFollowing(false);
     }
-    console.log(props);
   }, []);
 
   useEffect(() => {
@@ -50,16 +63,28 @@ const MorePopup = (props) => {
     <MorePopupWrapper onClick={props.showPostOptions}>
       <MorePopupContainer>
         <ul>
-          <li className="conditional">
-            <button>Report</button>
-          </li>
-          {isFollowing && (
+          {props.postUserId === props.user._id ? (
             <>
+              <li>
+                <button className="font-weight-bold" onClick={props.toggleEditPanel}>
+                  Edit Post
+                </button>
+              </li>
               <li className="conditional">
-                <button onClick={() => followHandler(props.postUserId)}>Unfollow</button>
+                <button onClick={deletePostHandler}>Delete Post</button>
               </li>
             </>
+          ) : (
+            <li className="conditional">
+              <button>Report</button>
+            </li>
           )}
+          {isFollowing && (
+            <li className="conditional">
+              <button onClick={() => followHandler(props.postUserId)}>Unfollow</button>
+            </li>
+          )}
+
           <li>
             <button>Go to post</button>
           </li>
