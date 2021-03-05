@@ -5,7 +5,7 @@ import styled from "styled-components";
 function SinglePost(props) {
   return (
     <>
-      <Col md={4} style={{ position: "relative" }}>
+      <Col md={4} className="mb-4" style={{ position: "relative" }}>
         <Post src={props.post.image} />
         <Overlay />
       </Col>
@@ -14,11 +14,10 @@ function SinglePost(props) {
 }
 const Post = styled.img`
   width: 100%;
-  height: 100%;
+  height: 300px;
+  max-height: 300px;
   object-fit: cover;
   overflow: hidden;
-  max-height: 300px;
-  margin-bottom: 30px;
 `;
 
 const Overlay = styled.div`
