@@ -22,9 +22,11 @@ const Feed = (props) => {
   const [showNewPostPanel, setShowNewPostPanel] = useState(false);
   const [posts, setPosts] = useState([]);
   const [myPosts, setMyPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchPosts = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/following`, { credentials: "include" });
       const data = await response.json();
       if (!data.errors) {
@@ -37,6 +39,7 @@ const Feed = (props) => {
       if (!data_me.errors) {
         setMyPosts(data_me);
       }
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -83,7 +86,7 @@ const Feed = (props) => {
                     ))}
                   </>
                 ) : (
-                  <p className="no-posts w-100 text-center">Follow more people to see posts/stories.</p>
+                  !loading && <p className="no-posts w-100 text-center">Follow more people to see posts/stories.</p>
                 )}
 
                 <div className="spacer" style={{ height: 100 }}></div>
