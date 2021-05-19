@@ -19,7 +19,6 @@ function Suggestions(props) {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/users/suggestions`, { credentials: "include" });
       const data = await response.json();
-      console.log(data);
       setSuggestions(data);
     } catch (error) {
       console.log(error);

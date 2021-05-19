@@ -10,7 +10,6 @@ export default function ProfilePage() {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/me`, { credentials: "include" });
       const data = await response.json();
-      console.log(data);
       setMyPosts(data);
     } catch (error) {
       console.log(error);

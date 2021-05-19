@@ -46,7 +46,6 @@ const Register = (props) => {
         },
       });
       const data = await response.json();
-      console.log(data);
       if (!data.errors) {
         props.showErrors(false);
         props.setError();
