@@ -22,7 +22,6 @@ const CreatePostPanel = (props) => {
 
   const uploadPictureHandler = async () => {
     try {
-      console.log(newPostImage);
       setIsPostUploading(true);
       let formData = new FormData();
       let blob = new Blob([newPostImage.picture[0]], { type: "img/jpeg" });

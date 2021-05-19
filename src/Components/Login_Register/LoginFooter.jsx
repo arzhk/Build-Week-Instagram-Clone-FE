@@ -34,7 +34,7 @@ function LoginFooter() {
             <option key={index}>{language}</option>
           ))}
         </select>
-        <small>© 2021 Instagram from Facebook</small>
+        <small>© 2021 Instagram Clone by Aaron Rizhik</small>
       </div>
     </LoginFooterContainer>
   );
