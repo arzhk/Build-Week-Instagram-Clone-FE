@@ -1,6 +1,6 @@
 const authorise = async (setUser) => {
   try {
-    const response = await fetch("http://localhost:5555/api/users/me", { credentials: "include" });
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/users/me`, { credentials: "include" });
     const data = await response.json();
     if (!data.errors) {
       setUser(data);

@@ -27,7 +27,7 @@ const PostEditPanel = (props) => {
         text: textInput,
       };
 
-      const response = await fetch(`http://localhost:5555/api/posts/${props.post._id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/${props.post._id}`, {
         method: "PUT",
         body: JSON.stringify(updatedInfo),
         headers: {

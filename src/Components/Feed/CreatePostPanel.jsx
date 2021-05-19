@@ -27,7 +27,7 @@ const CreatePostPanel = (props) => {
       let formData = new FormData();
       let blob = new Blob([newPostImage.picture[0]], { type: "img/jpeg" });
       formData.append("image", blob);
-      const response = await fetch(`http://localhost:5555/api/posts/picture`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/posts/picture`, {
         method: "POST",
         body: formData,
       });
@@ -50,7 +50,7 @@ const CreatePostPanel = (props) => {
         text: captionInput,
       };
 
-      const response = await fetch(`http://localhost:5555/api/posts`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/posts`, {
         method: "POST",
         body: JSON.stringify(newPost),
         headers: {

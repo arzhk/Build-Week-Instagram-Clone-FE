@@ -8,7 +8,7 @@ export default function ProfilePage() {
 
   const fetchMyPosts = async () => {
     try {
-      const response = await fetch("http://localhost:5555/api/posts/me", { credentials: "include" });
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/me`, { credentials: "include" });
       const data = await response.json();
       console.log(data);
       setMyPosts(data);

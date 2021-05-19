@@ -30,7 +30,7 @@ const Login = (props) => {
     event.preventDefault();
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5555/api/users/login", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/login`, {
         method: "POST",
         body: JSON.stringify(inputData),
         headers: {
@@ -113,8 +113,8 @@ const Login = (props) => {
           </MiddleContainer>
 
           <BottomContainer>
-            <a href="http://localhost:5555/api/users/facebook">
-              <Button>
+            <a href={`${process.env.REACT_APP_API_URL}/users/facebook`}>
+              <Button disabled={true}>
                 <FacebookIcon />
                 Log in with Facebook
               </Button>
@@ -263,6 +263,10 @@ const BottomContainer = styled.div`
     }
     :active {
       box-shadow: none;
+    }
+    :disabled {
+      background-color: transparent;
+      color: ${theme.main.facebook};
     }
     svg {
       margin-right: 0.25rem;

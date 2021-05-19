@@ -20,7 +20,7 @@ const PopupPost = (props) => {
 
   const followHandler = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5555/api/users/follow/${userId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/follow/${userId}`, {
         method: "POST",
         credentials: "include",
       });
@@ -35,7 +35,7 @@ const PopupPost = (props) => {
 
   const likeHandler = async () => {
     try {
-      await fetch(`http://localhost:5555/api/posts/${props.post._id}/like/${props.user._id}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/posts/${props.post._id}/like/${props.user._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +56,7 @@ const PopupPost = (props) => {
           text: commentInput,
         };
 
-        await fetch(`http://localhost:5555/api/posts/${props.post._id}/comments`, {
+        await fetch(`${process.env.REACT_APP_API_URL}/posts/${props.post._id}/comments`, {
           method: "POST",
           body: JSON.stringify(newComment),
           headers: {
@@ -102,7 +102,6 @@ const PopupPost = (props) => {
         </div>
         <div className="right">
           <div>
-            {" "}
             <PopupPostHeader>
               <div className="left">
                 <div className="profile-picture">

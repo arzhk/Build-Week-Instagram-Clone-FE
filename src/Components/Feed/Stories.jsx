@@ -17,7 +17,7 @@ const Stories = (props) => {
 
   const storiesHandler = async () => {
     try {
-      const response = await fetch("http://localhost:5555/api/users/following", { credentials: "include" });
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/following`, { credentials: "include" });
       const data = await response.json();
       if (response.ok) {
         setStories(data.splice(0, 12));

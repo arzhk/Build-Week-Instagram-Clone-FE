@@ -28,7 +28,7 @@ const EditPanel = (props) => {
       let formData = new FormData();
       let blob = new Blob([newProfilePicture.picture[0]], { type: "img/jpeg" });
       formData.append("image", blob);
-      const response = await fetch(`http://localhost:5555/api/posts/picture`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/picture`, {
         method: "POST",
         body: formData,
       });
@@ -49,7 +49,7 @@ const EditPanel = (props) => {
         image: imagepath || props.user.image,
       };
 
-      const response = await fetch(`http://localhost:5555/api/users/updateInfo`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/updateInfo`, {
         method: "PUT",
         body: JSON.stringify(updatedInfo),
         headers: {

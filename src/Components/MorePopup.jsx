@@ -16,7 +16,7 @@ const MorePopup = (props) => {
 
   const followHandler = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5555/api/users/follow/${userId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/follow/${userId}`, {
         method: "POST",
         credentials: "include",
       });
@@ -31,7 +31,7 @@ const MorePopup = (props) => {
 
   const deletePostHandler = async () => {
     try {
-      await fetch(`http://localhost:5555/api/posts/${props.postId}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/posts/${props.postId}`, {
         method: "DELETE",
         credentials: "include",
       });

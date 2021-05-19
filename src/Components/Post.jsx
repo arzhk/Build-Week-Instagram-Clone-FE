@@ -28,7 +28,7 @@ const Post = (props) => {
 
   const fetchComments = async () => {
     try {
-      const response = await fetch(`http://localhost:5555/api/posts/${props.post._id}/comments`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/${props.post._id}/comments`, {
         credentials: "include",
       });
       const data = await response.json();
@@ -38,7 +38,7 @@ const Post = (props) => {
 
   const likeHandler = async () => {
     try {
-      await fetch(`http://localhost:5555/api/posts/${props.post._id}/like/${props.user._id}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/posts/${props.post._id}/like/${props.user._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const Post = (props) => {
           text: commentInput,
         };
 
-        await fetch(`http://localhost:5555/api/posts/${props.post._id}/comments`, {
+        await fetch(`${process.env.REACT_APP_API_URL}/posts/${props.post._id}/comments`, {
           method: "POST",
           body: JSON.stringify(newComment),
           headers: {

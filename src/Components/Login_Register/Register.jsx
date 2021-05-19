@@ -38,7 +38,7 @@ const Register = (props) => {
         username: inputData.username,
         password: inputData.password,
       };
-      const response = await fetch("http://localhost:5555/api/users/register", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/register`, {
         method: "POST",
         body: JSON.stringify(newUser),
         headers: {
@@ -84,7 +84,7 @@ const Register = (props) => {
           <h1></h1> {/* Logo */}
           <h5>Sign up to see photos and videos from your friends.</h5>
           <FacebookLogInContainer>
-            <a href="http://localhost:5555/api/users/facebook">
+            <a href={`${process.env.REACT_APP_API_URL}/users/facebook`}>
               <Button>
                 <FacebookIcon />
                 Log in with Facebook

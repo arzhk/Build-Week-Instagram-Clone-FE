@@ -25,14 +25,14 @@ const Feed = (props) => {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch("http://localhost:5555/api/posts/following", { credentials: "include" });
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/following`, { credentials: "include" });
       const data = await response.json();
       if (!data.errors) {
         /*         const posts = [];
         data.forEach(async (post) => posts.push(post._doc)); */
         setPosts(data);
       }
-      const response_me = await fetch("http://localhost:5555/api/posts/me", { credentials: "include" });
+      const response_me = await fetch(`${process.env.REACT_APP_API_URL}/posts/me`, { credentials: "include" });
       const data_me = await response_me.json();
       if (!data_me.errors) {
         setMyPosts(data_me);
@@ -44,7 +44,7 @@ const Feed = (props) => {
 
   /*  const fetchPostsTest = async () => {
     try {
-      const response = await fetch("http://localhost:5555/api/posts/following2", { credentials: "include" });
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/following2`, { credentials: "include" });
       const data = await response.json();
       console.log(data);
       setPosts(data);

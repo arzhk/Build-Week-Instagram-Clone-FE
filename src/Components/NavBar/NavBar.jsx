@@ -43,7 +43,7 @@ const NavBar = (props) => {
 
   const fetchSearchResults = async () => {
     try {
-      const response = await fetch("http://localhost:5555/api/users/search", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/search`, {
         method: "POST",
         body: JSON.stringify({ searchTerm: searchInput }),
         headers: {

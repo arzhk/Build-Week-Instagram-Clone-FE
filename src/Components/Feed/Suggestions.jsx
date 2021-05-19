@@ -17,7 +17,7 @@ function Suggestions(props) {
 
   const fetchSuggestions = async () => {
     try {
-      const response = await fetch("http://localhost:5555/api/users/suggestions", { credentials: "include" });
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/suggestions`, { credentials: "include" });
       const data = await response.json();
       setSuggestions(data);
     } catch (error) {
@@ -27,7 +27,7 @@ function Suggestions(props) {
 
   const followHandler = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5555/api/users/follow/${userId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users/follow/${userId}`, {
         method: "POST",
         credentials: "include",
       });

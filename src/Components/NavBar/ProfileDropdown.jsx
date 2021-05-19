@@ -29,7 +29,7 @@ const ProfileDropdown = (props) => {
           <Link to="/">{SwitchAccountIcon()}Switch Accounts</Link>
         </li>
         <li onClick={() => props.toggleMenu()}>
-          <a href="http://localhost:5555/api/users/logout">Log Out</a>
+          <a href={`${process.env.REACT_APP_API_URL}/users/logout`}>Log Out</a>
         </li>
       </ul>
     </ProfileDropdownMainContainer>
