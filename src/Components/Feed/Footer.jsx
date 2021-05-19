@@ -26,7 +26,7 @@ function Footer() {
           </li>
         ))}
       </ul>
-      <p>© 2021 INSTAGRAM CLONE FROM STRIVE</p>
+      <p>© 2021 Instagram Clone by Aaron Rizhik</p>
     </FeedFooterMainContainer>
   );
 }
